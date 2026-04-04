@@ -1,1 +1,173 @@
-# fourkeys-insights
+# Four Keys Insights
+
+Local DORA Four Keys metrics dashboard powered by GitHub PR data. Single container, zero external infrastructure. Just `docker compose up`.
+
+**[日本語版 README はこちら](README.ja.md)**
+
+## What it does
+
+Fetches merged pull requests from your GitHub repos, calculates the four DORA metrics, and displays them in a browser dashboard.
+
+| Metric | How it's calculated |
+|--------|-------------------|
+| **Lead Time for Changes** | Median time from first commit (or issue/PR creation) to PR merge |
+| **Deploy Frequency** | PR merge count per day (treats merge as deploy) |
+| **Change Failure Rate** | % of PRs matching incident rules (title/branch/label keywords) |
+| **Mean Time to Restore** | Median lead time of incident PRs |
+
+Each metric gets a DORA level: Elite, High, Medium, or Low.
+
+## Quick Start
+
+### Prerequisites
+
+- Docker and Docker Compose
+- GitHub Personal Access Token (fine-grained)
+  - Required permissions: **Pull requests (read)**, **Contents (read)**
+
+### 1. Clone and configure
+
+```bash
+git clone https://github.com/hiro1202/fourkeys-insights.git
+cd fourkeys-insights
+cp .env.example .env
+```
+
+Edit `.env` and add your GitHub token:
+
+```
+GITHUB_TOKEN=github_pat_xxxxxxxxxxxx
+```
+
+### 2. Start
+
+```bash
+docker compose up
+```
+
+Open http://localhost:8080 in your browser.
+
+### 3. Setup wizard
+
+1. **Validate token** - Click "Validate" to verify your PAT
+2. **Select repositories** - Search and check the repos you want to track
+3. **Create group** - Name your group and start syncing
+
+The dashboard appears after sync completes.
+
+## Features
+
+- **Multi-repo grouping** - Track metrics across multiple repositories as a single team
+- **Selectable lead time start point** - First commit, linked issue creation, or PR creation
+- **Incident detection at query time** - Configurable rules (title/branch keywords, labels). Change rules without re-syncing
+- **Issue-linked MTTR** - Parses `Closes #N` from PR body to use issue creation as MTTR start
+- **ETag conditional requests** - Skips re-fetching unchanged PR lists on re-sync
+- **CSV export** - ZIP with metrics summary and PR details (UTF-8 BOM for Excel)
+- **DORA badge** - SVG badge at `/api/v1/groups/:id/badge`
+- **PR size distribution** - Histogram chart (XS/S/M/L buckets)
+- **Dark mode** - Toggle or follow OS preference
+- **i18n** - English and Japanese
+
+## Configuration
+
+### Environment variables
+
+| Variable | Description | Default |
+|----------|------------|---------|
+| `GITHUB_TOKEN` | GitHub PAT (required) | - |
+| `APP_PORT` | Server port | `8080` |
+| `APP_BIND` | Bind address | `localhost` |
+| `LOG_LEVEL` | Log level (debug/info/warn/error) | `info` |
+
+### Config file
+
+Alternatively, edit `config/config.yaml`:
+
+```yaml
+app:
+  port: 8080
+  bind: "localhost"
+
+github:
+  token: ""
+  api_base_url: "https://api.github.com"
+
+log:
+  level: "info"
+
+fetch:
+  concurrency: 1
+```
+
+Priority: environment variable > config.yaml > default.
+
+### Per-repo settings (via UI)
+
+- **Incident detection rules** - Title keywords, branch keywords, label matches
+- **Lead time start point** - `first_commit_at`, `issue.created_at`, or `pr_created_at`
+- **Period** - Number of days to analyze
+
+## API
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/v1/auth/validate` | Validate PAT |
+| GET | `/api/v1/repos` | List accessible repos |
+| GET | `/api/v1/repos/:id/settings` | Get repo settings |
+| PUT | `/api/v1/repos/:id/settings` | Update repo settings |
+| GET | `/api/v1/groups` | List groups |
+| POST | `/api/v1/groups` | Create group |
+| PUT | `/api/v1/groups/:id` | Update group |
+| DELETE | `/api/v1/groups/:id` | Delete group |
+| GET | `/api/v1/groups/:id/metrics` | Get Four Keys metrics |
+| GET | `/api/v1/groups/:id/pulls` | List PRs (paginated) |
+| GET | `/api/v1/groups/:id/export` | CSV export (ZIP) |
+| GET | `/api/v1/groups/:id/badge` | DORA level SVG badge |
+| POST | `/api/v1/groups/:id/sync` | Start sync job |
+| GET | `/api/v1/jobs/:id` | Get job status |
+| POST | `/api/v1/jobs/:id/cancel` | Cancel job |
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Backend | Go (chi, go-github, zap, viper) |
+| Frontend | React, Vite, Tailwind CSS, ECharts, TanStack Query |
+| Database | SQLite (WAL mode) |
+| Container | Docker (multi-stage build, go:embed) |
+
+## Development
+
+### Backend
+
+```bash
+cd backend
+go run ./cmd/server/
+```
+
+### Frontend (dev server with hot reload)
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Vite proxies `/api` to `localhost:8080`.
+
+### Tests
+
+```bash
+# Go tests (36 tests)
+cd backend && CGO_ENABLED=1 go test ./...
+
+# i18n key validation
+cd frontend && node scripts/check-i18n.js
+
+# E2E tests (5 tests)
+cd e2e && npm install && npx playwright install chromium && npx playwright test
+```
+
+## License
+
+MIT
