@@ -9,6 +9,7 @@ on:
 permissions:
   contents: read
   pull-requests: write
+  issues: write
 
 jobs:
   backend:
@@ -45,6 +46,7 @@ jobs:
 
       - name: Test with coverage
         run: |
+          set -o pipefail
           CGO_ENABLED=1 go test ./... -coverprofile=coverage.out -covermode=atomic -v 2>&1 | tee test-output.txt
 
       - name: Generate coverage report
