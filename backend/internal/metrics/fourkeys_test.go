@@ -160,12 +160,12 @@ func TestDORALevelClassification(t *testing.T) {
 		hours float64
 		want  string
 	}{
-		{0.5, "elite"},     // 30 min < 1 day
-		{23, "elite"},      // 23h < 1 day
-		{25, "high"},       // 25h (1-7 days)
-		{150, "high"},      // ~6.25 days
-		{200, "medium"},    // ~8.3 days (1 week - 1 month)
-		{800, "low"},       // ~33 days
+		{0.5, "elite"},  // 30 min < 1 day
+		{23, "elite"},   // 23h < 1 day
+		{25, "high"},    // 25h (1-7 days)
+		{150, "high"},   // ~6.25 days
+		{200, "medium"}, // ~8.3 days (1 week - 1 month)
+		{800, "low"},    // ~33 days
 	}
 
 	for _, tt := range tests {

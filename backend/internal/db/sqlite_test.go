@@ -136,14 +136,14 @@ func TestPullRequestUpsertAndList(t *testing.T) {
 
 	now := time.Now().UTC().Truncate(time.Second)
 	pr := &PullRequest{
-		RepoID:    repoID,
-		PRNumber:  42,
-		Title:     "Fix login bug",
+		RepoID:     repoID,
+		PRNumber:   42,
+		Title:      "Fix login bug",
 		BranchName: sql.NullString{String: "hotfix/login", Valid: true},
-		Additions: 10,
-		Deletions: 5,
-		CreatedAt: now.Add(-24 * time.Hour),
-		MergedAt:  now,
+		Additions:  10,
+		Deletions:  5,
+		CreatedAt:  now.Add(-24 * time.Hour),
+		MergedAt:   now,
 	}
 	if err := store.UpsertPullRequest(ctx, pr); err != nil {
 		t.Fatal(err)

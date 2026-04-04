@@ -8,10 +8,10 @@ import (
 
 // LeadTimeResult holds the lead time calculation for a single PR.
 type LeadTimeResult struct {
-	PRNumber    int
-	LeadTime    time.Duration
-	StartPoint  string // which start point was actually used
-	UsedFallback bool  // true if the selected start point wasn't available
+	PRNumber     int
+	LeadTime     time.Duration
+	StartPoint   string // which start point was actually used
+	UsedFallback bool   // true if the selected start point wasn't available
 }
 
 // CalculateLeadTime computes lead time for a single PR.

@@ -12,9 +12,9 @@ import (
 	"github.com/hiro1202/fourkeys-insights/internal/api"
 	"github.com/hiro1202/fourkeys-insights/internal/config"
 	"github.com/hiro1202/fourkeys-insights/internal/db"
-	"github.com/hiro1202/fourkeys-insights/internal/static"
 	gh "github.com/hiro1202/fourkeys-insights/internal/github"
 	"github.com/hiro1202/fourkeys-insights/internal/jobs"
+	"github.com/hiro1202/fourkeys-insights/internal/static"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
