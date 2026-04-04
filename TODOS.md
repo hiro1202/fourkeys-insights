@@ -27,12 +27,9 @@
 - **Depends on:** v1のメトリクス計算基盤が安定していること
 
 ### DESIGN.md Full Creation
+- **Completed:** feat/dashboard-gaps (2026-04-05)
 - **What:** エンジニアリングレビューとデザインレビューで確定した全決定事項を反映した正式なDESIGN.mdを作成
-- **Why:** 現在の設計ドキュメントはoffice-hoursのアーティファクト（gstack内）にあり、eng reviewとdesign reviewで大幅に変更された。実装前に最新の設計を1ファイルにまとめる必要がある
-- **Pros:** 実装時の単一参照ポイントになる。新しいコントリビューターのオンボーディングにも使える
-- **Cons:** 作成に30分程度かかる（CC+gstack）
-- **Context:** 含めるべき内容: アーキテクチャ図、DBスキーマ（repos, repo_groups, repo_group_members, pull_requests, jobs）、API設計（13エンドポイント）、UIフロー（3ステップウィザード→ダッシュボード）、i18n方針、テスト戦略、デザインシステムトークン
-- **Depends on:** eng reviewとdesign reviewが完了していること（完了済み）
+- **Context:** DESIGN.mdを作成済み。アーキテクチャ図、DBスキーマ、API設計（16エンドポイント）、UIフロー、i18n方針、テスト戦略を含む
 
 ## Phase 2 (post-v1)
 

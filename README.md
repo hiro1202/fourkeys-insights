@@ -11,7 +11,7 @@ Fetches merged pull requests from your GitHub repos, calculates the four DORA me
 | Metric | How it's calculated |
 |--------|-------------------|
 | **Lead Time for Changes** | Median time from first commit (or issue/PR creation) to PR merge |
-| **Deploy Frequency** | PR merge count per day (treats merge as deploy) |
+| **Deploy Frequency** | PR merge count per period (treats merge as deploy) |
 | **Change Failure Rate** | % of PRs matching incident rules (title/branch/label keywords) |
 | **Mean Time to Restore** | Median lead time of incident PRs |
 
@@ -58,7 +58,9 @@ The dashboard appears after sync completes.
 ## Features
 
 - **Multi-repo grouping** - Track metrics across multiple repositories as a single team
-- **Selectable lead time start point** - First commit, linked issue creation, or PR creation
+- **Aggregation unit** - Weekly (Mon-Sun) or monthly period for metrics cards and trend charts
+- **Selectable lead time start point** - First commit, linked issue creation, or PR creation (configurable separately for lead time and MTTR)
+- **Trend charts** - Lead time, deploy frequency, CFR, and MTTR trends over 3/6/12 months
 - **Incident detection at query time** - Configurable rules (title/branch keywords, labels). Change rules without re-syncing
 - **Issue-linked MTTR** - Parses `Closes #N` from PR body to use issue creation as MTTR start
 - **ETag conditional requests** - Skips re-fetching unchanged PR lists on re-sync
@@ -101,11 +103,12 @@ fetch:
 
 Priority: environment variable > config.yaml > default.
 
-### Per-repo settings (via UI)
+### Per-group settings (via Settings page)
 
-- **Incident detection rules** - Title keywords, branch keywords, label matches
+- **Aggregation unit** - Weekly or monthly
 - **Lead time start point** - `first_commit_at`, `issue.created_at`, or `pr_created_at`
-- **Period** - Number of days to analyze
+- **MTTR start point** - Same options, configurable independently from lead time
+- **Incident detection rules** - Title keywords, branch keywords, label matches
 
 ## API
 
@@ -120,6 +123,9 @@ Priority: environment variable > config.yaml > default.
 | PUT | `/api/v1/groups/:id` | Update group |
 | DELETE | `/api/v1/groups/:id` | Delete group |
 | GET | `/api/v1/groups/:id/metrics` | Get Four Keys metrics |
+| GET | `/api/v1/groups/:id/trends` | Get trend data points |
+| GET | `/api/v1/groups/:id/settings` | Get group settings |
+| PUT | `/api/v1/groups/:id/settings` | Update group settings |
 | GET | `/api/v1/groups/:id/pulls` | List PRs (paginated) |
 | GET | `/api/v1/groups/:id/export` | CSV export (ZIP) |
 | GET | `/api/v1/groups/:id/badge` | DORA level SVG badge |
@@ -167,6 +173,12 @@ cd frontend && node scripts/check-i18n.js
 # E2E tests (5 tests)
 cd e2e && npm install && npx playwright install chromium && npx playwright test
 ```
+
+## Documentation
+
+- [DESIGN.md](DESIGN.md) - Architecture, DB schema, API design, metrics definitions
+- [TODOS.md](TODOS.md) - Deferred features and Phase 2 roadmap
+- [CHANGELOG.md](CHANGELOG.md) - Version history
 
 ## License
 

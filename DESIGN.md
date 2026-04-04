@@ -59,7 +59,7 @@ repo-root/
     tailwind.config.js
     src/
       app/
-      pages/        # SetupPage, DashboardPage
+      pages/        # SetupPage, DashboardPage, SettingsPage
       components/   # MetricsCard, Chart, PRTable, Wizard
       api/          # TanStack Query hooks
       charts/       # ECharts configs
@@ -85,10 +85,14 @@ CREATE TABLE repos (
 );
 
 CREATE TABLE repo_groups (
-  id          INTEGER PRIMARY KEY AUTOINCREMENT,
-  name        TEXT NOT NULL,
-  period_days INTEGER NOT NULL DEFAULT 30,
-  created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+  id               INTEGER PRIMARY KEY AUTOINCREMENT,
+  name             TEXT NOT NULL,
+  aggregation_unit TEXT NOT NULL DEFAULT 'weekly',
+  lead_time_start  TEXT NOT NULL DEFAULT 'first_commit_at',
+  mttr_start       TEXT NOT NULL DEFAULT 'first_commit_at',
+  incident_rules   TEXT,
+  period_days      INTEGER NOT NULL DEFAULT 30,
+  created_at       DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE repo_group_members (
@@ -155,6 +159,9 @@ Groups:
   PUT    /api/v1/groups/:id           -- Update group (name, period_days)
   DELETE /api/v1/groups/:id           -- Delete group
   GET    /api/v1/groups/:id/metrics   -- Get group Four Keys metrics
+  GET    /api/v1/groups/:id/trends    -- Get trend data points (since, until, unit)
+  GET    /api/v1/groups/:id/settings  -- Get group settings
+  PUT    /api/v1/groups/:id/settings  -- Update group settings
   GET    /api/v1/groups/:id/export    -- CSV export (ZIP)
   GET    /api/v1/groups/:id/badge     -- DORA level SVG badge
 
@@ -172,7 +179,7 @@ Pull Requests:
 ### Lead Time for Changes
 - Definition: Time from selected start point to PR merge
 - Calculation: `merged_at - start_point` (median across group)
-- Start point options (per-group setting):
+- Start point options (per-group setting, configurable separately for lead time and MTTR):
   - `first_commit_at` (default): First commit timestamp in the PR
   - `issue.created_at`: Linked issue's creation time (if issue linked)
   - `pr_created_at`: PR creation timestamp
@@ -188,7 +195,7 @@ When fallback occurs, UI displays warning icon next to the affected PR row.
 
 ### Deploy Frequency
 - Definition: PR merge count to base branch per period
-- Calculation: `merged_pr_count / period_days`
+- Calculation: `merged_pr_count` (period total). DORA level classification still uses `merged_pr_count / period_days` internally
 - Note: Assumes PR merge = deploy. UI displays notice: "Treats PR merge as deployment"
 
 ### Change Failure Rate
@@ -199,7 +206,7 @@ When fallback occurs, UI displays warning icon next to the affected PR row.
 ### Mean Time to Restore (MTTR)
 - Definition: Median lead time of incident PRs
 - Calculation: `median(merged_at - start_point)` for incident PRs
-- UI notice: "Estimated proxy. Accurate MTTR requires incident management tool integration"
+- MTTR start point is configurable independently from change lead time start point
 - Issue-linked MTTR: When a PR body contains `Closes #N` etc., use `issue.created_at` as start point
 
 ### DORA Level Thresholds
@@ -317,11 +324,13 @@ Step 3: Group Creation
 +--------------------------------------------------+
 ```
 
-### Settings (Gear icon -> modal/drawer)
-- PAT change
-- Per-repo incident rules editor
+### Settings (full page at /settings)
+- Per-group aggregation unit (weekly/monthly)
 - Per-group lead time start point selector
-- Per-group period_days setting
+- Per-group MTTR start point selector (independent from lead time)
+- Per-group incident detection rules (title keywords, branch keywords, labels)
+- Repository list (display only)
+- Group deletion
 
 ### Sync States
 | State | UI | User Action |
