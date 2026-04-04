@@ -1,0 +1,11 @@
+services:
+  fourkeys:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
+      - APP_BIND=0.0.0.0
+    restart: unless-stopped
