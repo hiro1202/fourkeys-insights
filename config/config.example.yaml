@@ -1,0 +1,13 @@
+app:
+  port: 8080
+  bind: "localhost"    # Use "0.0.0.0" for network access
+
+github:
+  token: ""            # Or use GITHUB_TOKEN env var
+  api_base_url: "https://api.github.com"
+
+log:
+  level: "info"        # debug, info, warn, error
+
+fetch:
+  concurrency: 1       # 1 recommended. 2-3 faster but secondary rate limit risk

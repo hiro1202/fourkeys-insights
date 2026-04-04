@@ -1,0 +1,26 @@
+# Data
+data/*.db
+data/*.db-wal
+data/*.db-shm
+
+# Go
+backend/server
+*.exe
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# Embedded frontend (built by Docker)
+backend/internal/static/dist/
+
+# E2E
+e2e/node_modules/
+e2e/test-results/
+e2e/playwright-report/
+
+# Environment
+.env
+
+# OS
+.DS_Store
