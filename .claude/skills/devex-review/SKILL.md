@@ -1,0 +1,1 @@
+/Users/funakihirokazu/Develop/hiro1202/fourkeys-insights/.claude/skills/gstack/devex-review/SKILL.md
