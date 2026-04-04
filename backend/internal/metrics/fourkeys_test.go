@@ -52,10 +52,10 @@ func TestCalculateBasic(t *testing.T) {
 		t.Errorf("expected 1 incident PR, got %d", result.IncidentPRs)
 	}
 
-	// Deploy frequency: 3/30 = 0.1
-	expectedDF := 0.1
+	// Deploy frequency: 3 deploys in the period
+	expectedDF := 3.0
 	if math.Abs(result.DeployFrequency-expectedDF) > 0.01 {
-		t.Errorf("expected deploy frequency ~%.2f, got %.2f", expectedDF, result.DeployFrequency)
+		t.Errorf("expected deploy frequency ~%.0f, got %.0f", expectedDF, result.DeployFrequency)
 	}
 
 	// Change failure rate: 1/3 * 100 = 33.3%

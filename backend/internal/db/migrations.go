@@ -12,16 +12,19 @@ var migrations = []string{
 		etag            TEXT,
 		incident_rules  TEXT,
 		lead_time_start TEXT NOT NULL DEFAULT 'first_commit_at',
-		period_days     INTEGER NOT NULL DEFAULT 30,
+		mttr_start      TEXT,
 		created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 		updated_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 	)`,
 
 	`CREATE TABLE IF NOT EXISTS repo_groups (
-		id          INTEGER PRIMARY KEY AUTOINCREMENT,
-		name        TEXT NOT NULL,
-		period_days INTEGER NOT NULL DEFAULT 30,
-		created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+		id               INTEGER PRIMARY KEY AUTOINCREMENT,
+		name             TEXT NOT NULL,
+		aggregation_unit TEXT NOT NULL DEFAULT 'weekly',
+		lead_time_start  TEXT NOT NULL DEFAULT 'first_commit_at',
+		mttr_start       TEXT NOT NULL DEFAULT 'first_commit_at',
+		incident_rules   TEXT,
+		created_at       DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 	)`,
 
 	`CREATE TABLE IF NOT EXISTS repo_group_members (

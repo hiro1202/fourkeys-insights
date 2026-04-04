@@ -13,7 +13,7 @@ type Repo struct {
 	ETag          JSONNullString `json:"-"`
 	IncidentRules JSONNullString `json:"incident_rules"`
 	LeadTimeStart string         `json:"lead_time_start"`
-	PeriodDays    int            `json:"period_days"`
+	MTTRStart     JSONNullString `json:"mttr_start"`
 	CreatedAt     time.Time      `json:"created_at"`
 	UpdatedAt     time.Time      `json:"updated_at"`
 }
@@ -21,15 +21,18 @@ type Repo struct {
 type RepoSettings struct {
 	IncidentRules string `json:"incident_rules"`
 	LeadTimeStart string `json:"lead_time_start"`
-	PeriodDays    int    `json:"period_days"`
+	MTTRStart     string `json:"mttr_start"`
 }
 
 type Group struct {
-	ID         int64     `json:"id"`
-	Name       string    `json:"name"`
-	PeriodDays int       `json:"period_days"`
-	CreatedAt  time.Time `json:"created_at"`
-	Repos      []*Repo   `json:"repos,omitempty"`
+	ID              int64     `json:"id"`
+	Name            string    `json:"name"`
+	AggregationUnit string    `json:"aggregation_unit"`
+	LeadTimeStart   string    `json:"lead_time_start"`
+	MTTRStart       string    `json:"mttr_start"`
+	IncidentRules   string    `json:"incident_rules"`
+	CreatedAt       time.Time `json:"created_at"`
+	Repos           []*Repo   `json:"repos,omitempty"`
 }
 
 type PullRequest struct {

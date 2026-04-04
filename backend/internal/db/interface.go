@@ -18,8 +18,8 @@ type Store interface {
 	// Groups
 	ListGroups(ctx context.Context) ([]*Group, error)
 	GetGroup(ctx context.Context, id int64) (*Group, error)
-	CreateGroup(ctx context.Context, name string, periodDays int, repoIDs []int64) (int64, error)
-	UpdateGroup(ctx context.Context, id int64, name string, periodDays int) error
+	CreateGroup(ctx context.Context, name string, aggregationUnit string, repoIDs []int64) (int64, error)
+	UpdateGroup(ctx context.Context, id int64, name string, aggregationUnit string, leadTimeStart string, mttrStart string, incidentRules string) error
 	DeleteGroup(ctx context.Context, id int64) error
 
 	// Pull Requests
@@ -31,6 +31,7 @@ type Store interface {
 	// Jobs
 	CreateJob(ctx context.Context, groupID int64) (int64, error)
 	GetJob(ctx context.Context, id int64) (*Job, error)
+	GetLatestJobByGroup(ctx context.Context, groupID int64) (*Job, error)
 	UpdateJobStatus(ctx context.Context, id int64, status string, progress *JobProgress, errMsg string) error
 	RecoverInterruptedJobs(ctx context.Context) error
 

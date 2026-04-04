@@ -26,18 +26,14 @@ func buildExportZIP(group *db.Group, prs []*db.PullRequest, result metrics.FourK
 	summary.Write(bom)
 
 	now := time.Now().UTC()
-	since := now.AddDate(0, 0, -group.PeriodDays)
+	period := metrics.CalcPeriod(now, group.AggregationUnit)
 
 	// Build incident rules snapshot for header
-	var rulesSnapshot []string
-	for _, repo := range group.Repos {
-		rules := metrics.ParseIncidentRules(repo.IncidentRules.String)
-		rulesSnapshot = append(rulesSnapshot,
-			fmt.Sprintf("title_keywords=%s; branch_keywords=%s; labels=%s",
-				strings.Join(rules.TitleKeywords, ","),
-				strings.Join(rules.BranchKeywords, ","),
-				strings.Join(rules.Labels, ",")))
-	}
+	rules := metrics.ParseIncidentRules(group.IncidentRules)
+	rulesSnapshot := fmt.Sprintf("title_keywords=%s; branch_keywords=%s; labels=%s",
+		strings.Join(rules.TitleKeywords, ","),
+		strings.Join(rules.BranchKeywords, ","),
+		strings.Join(rules.Labels, ","))
 
 	mttrStr := "N/A"
 	if result.MTTRHours != nil {
@@ -46,14 +42,12 @@ func buildExportZIP(group *db.Group, prs []*db.PullRequest, result metrics.FourK
 
 	fmt.Fprintf(summary, "# Exported: %s\n", now.Format(time.RFC3339))
 	fmt.Fprintf(summary, "# Group: %s\n", group.Name)
-	fmt.Fprintf(summary, "# Period: %d days\n", group.PeriodDays)
+	fmt.Fprintf(summary, "# Aggregation: %s\n", group.AggregationUnit)
 	fmt.Fprintf(summary, "# Lead Time Start: %s\n", leadTimeStart)
-	if len(rulesSnapshot) > 0 {
-		fmt.Fprintf(summary, "# Incident Rules: %s\n", rulesSnapshot[0])
-	}
+	fmt.Fprintf(summary, "# Incident Rules: %s\n", rulesSnapshot)
 	fmt.Fprintf(summary, "Period,Lead Time (hours),Deploy Frequency (/day),Change Failure Rate (%%),MTTR (hours),DORA Level\n")
 	fmt.Fprintf(summary, "%s - %s,%.1f,%.2f,%.1f,%s,%s\n",
-		since.Format("2006-01-02"), now.Format("2006-01-02"),
+		period.Start.Format("2006-01-02"), period.End.Format("2006-01-02"),
 		result.LeadTimeHours, result.DeployFrequency, result.ChangeFailureRate,
 		mttrStr, result.OverallLevel)
 
