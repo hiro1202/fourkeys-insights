@@ -54,7 +54,7 @@ export function SetupPage() {
   const handleCreate = async () => {
     const group = await createGroup.mutateAsync({
       name: groupName,
-      period_days: 30,
+      aggregation_unit: 'weekly',
       repo_ids: Array.from(selectedIds),
     })
     await startSync.mutateAsync(group.id)

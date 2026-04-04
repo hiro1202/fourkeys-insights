@@ -36,6 +36,7 @@ type CalculateInput struct {
 	PRs           []*db.PullRequest
 	RepoRulesMap  map[int64]IncidentRules // repoID -> rules
 	LeadTimeStart string
+	MTTRStart     string // separate start point for MTTR; falls back to LeadTimeStart if empty
 	PeriodDays    int
 }
 
@@ -59,6 +60,11 @@ func Calculate(input CalculateInput) FourKeysResult {
 	var incidentLeadTimes []time.Duration
 	incidentCount := 0
 
+	mttrStart := input.MTTRStart
+	if mttrStart == "" {
+		mttrStart = input.LeadTimeStart
+	}
+
 	for _, pr := range input.PRs {
 		// Lead time
 		lt := CalculateLeadTime(pr, input.LeadTimeStart)
@@ -74,7 +80,9 @@ func Calculate(input CalculateInput) FourKeysResult {
 		}
 		if IsIncident(pr, rules) {
 			incidentCount++
-			incidentLeadTimes = append(incidentLeadTimes, lt.LeadTime)
+			// Use MTTRStart for incident PR lead time (MTTR calculation)
+			mttrLt := CalculateLeadTime(pr, mttrStart)
+			incidentLeadTimes = append(incidentLeadTimes, mttrLt.LeadTime)
 		}
 	}
 

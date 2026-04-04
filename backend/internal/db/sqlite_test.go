@@ -64,7 +64,7 @@ func TestRepoSettings(t *testing.T) {
 	err := store.UpdateRepoSettings(ctx, id, &RepoSettings{
 		IncidentRules: `{"title_keywords":["revert"]}`,
 		LeadTimeStart: "pr_created_at",
-		PeriodDays:    60,
+		MTTRStart:     "issue.created_at",
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -77,8 +77,8 @@ func TestRepoSettings(t *testing.T) {
 	if repo.LeadTimeStart != "pr_created_at" {
 		t.Fatalf("expected lead_time_start 'pr_created_at', got '%s'", repo.LeadTimeStart)
 	}
-	if repo.PeriodDays != 60 {
-		t.Fatalf("expected period_days 60, got %d", repo.PeriodDays)
+	if repo.MTTRStart.String != "issue.created_at" {
+		t.Fatalf("expected mttr_start 'issue.created_at', got '%s'", repo.MTTRStart.String)
 	}
 }
 
@@ -89,7 +89,7 @@ func TestGroupCRUD(t *testing.T) {
 	r1, _ := store.UpsertRepo(ctx, &Repo{Owner: "o", Name: "a", FullName: "o/a", DefaultBranch: "main"})
 	r2, _ := store.UpsertRepo(ctx, &Repo{Owner: "o", Name: "b", FullName: "o/b", DefaultBranch: "main"})
 
-	groupID, err := store.CreateGroup(ctx, "backend", 30, []int64{r1, r2})
+	groupID, err := store.CreateGroup(ctx, "backend", "weekly", []int64{r1, r2})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -106,13 +106,16 @@ func TestGroupCRUD(t *testing.T) {
 	}
 
 	// Update
-	err = store.UpdateGroup(ctx, groupID, "backend-team", 90)
+	err = store.UpdateGroup(ctx, groupID, "backend-team", "monthly", "pr_created_at", "issue.created_at", `{"title_keywords":["revert"]}`)
 	if err != nil {
 		t.Fatal(err)
 	}
 	g, _ := store.GetGroup(ctx, groupID)
 	if g.Name != "backend-team" {
 		t.Fatalf("expected name 'backend-team', got '%s'", g.Name)
+	}
+	if g.AggregationUnit != "monthly" {
+		t.Fatalf("expected aggregation_unit 'monthly', got '%s'", g.AggregationUnit)
 	}
 
 	// Delete (cascade should remove members)
@@ -131,7 +134,7 @@ func TestPullRequestUpsertAndList(t *testing.T) {
 	ctx := context.Background()
 
 	repoID, _ := store.UpsertRepo(ctx, &Repo{Owner: "o", Name: "r", FullName: "o/r", DefaultBranch: "main"})
-	groupID, _ := store.CreateGroup(ctx, "team", 30, []int64{repoID})
+	groupID, _ := store.CreateGroup(ctx, "team", "weekly", []int64{repoID})
 
 	now := time.Now().UTC().Truncate(time.Second)
 	pr := &PullRequest{
@@ -174,7 +177,7 @@ func TestGetMergedPRsByGroup(t *testing.T) {
 	ctx := context.Background()
 
 	repoID, _ := store.UpsertRepo(ctx, &Repo{Owner: "o", Name: "r", FullName: "o/r", DefaultBranch: "main"})
-	groupID, _ := store.CreateGroup(ctx, "team", 30, []int64{repoID})
+	groupID, _ := store.CreateGroup(ctx, "team", "weekly", []int64{repoID})
 
 	now := time.Now().UTC().Truncate(time.Second)
 
@@ -207,7 +210,7 @@ func TestJobLifecycle(t *testing.T) {
 	ctx := context.Background()
 
 	repoID, _ := store.UpsertRepo(ctx, &Repo{Owner: "o", Name: "r", FullName: "o/r", DefaultBranch: "main"})
-	groupID, _ := store.CreateGroup(ctx, "team", 30, []int64{repoID})
+	groupID, _ := store.CreateGroup(ctx, "team", "weekly", []int64{repoID})
 
 	jobID, err := store.CreateJob(ctx, groupID)
 	if err != nil {
@@ -244,7 +247,7 @@ func TestRecoverInterruptedJobs(t *testing.T) {
 	ctx := context.Background()
 
 	repoID, _ := store.UpsertRepo(ctx, &Repo{Owner: "o", Name: "r", FullName: "o/r", DefaultBranch: "main"})
-	groupID, _ := store.CreateGroup(ctx, "team", 30, []int64{repoID})
+	groupID, _ := store.CreateGroup(ctx, "team", "weekly", []int64{repoID})
 
 	// Create two jobs in "fetching" state
 	j1, _ := store.CreateJob(ctx, groupID)

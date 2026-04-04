@@ -62,7 +62,7 @@ func (s *SQLiteStore) UpsertRepo(ctx context.Context, repo *Repo) (int64, error)
 }
 
 func (s *SQLiteStore) ListRepos(ctx context.Context) ([]*Repo, error) {
-	rows, err := s.db.QueryContext(ctx, `SELECT id, owner, name, full_name, default_branch, etag, incident_rules, lead_time_start, period_days, created_at, updated_at FROM repos ORDER BY full_name`)
+	rows, err := s.db.QueryContext(ctx, `SELECT id, owner, name, full_name, default_branch, etag, incident_rules, lead_time_start, mttr_start, created_at, updated_at FROM repos ORDER BY full_name`)
 	if err != nil {
 		return nil, err
 	}
@@ -71,7 +71,7 @@ func (s *SQLiteStore) ListRepos(ctx context.Context) ([]*Repo, error) {
 	var repos []*Repo
 	for rows.Next() {
 		r := &Repo{}
-		if err := rows.Scan(&r.ID, &r.Owner, &r.Name, &r.FullName, &r.DefaultBranch, &r.ETag, &r.IncidentRules, &r.LeadTimeStart, &r.PeriodDays, &r.CreatedAt, &r.UpdatedAt); err != nil {
+		if err := rows.Scan(&r.ID, &r.Owner, &r.Name, &r.FullName, &r.DefaultBranch, &r.ETag, &r.IncidentRules, &r.LeadTimeStart, &r.MTTRStart, &r.CreatedAt, &r.UpdatedAt); err != nil {
 			return nil, err
 		}
 		repos = append(repos, r)
@@ -81,8 +81,8 @@ func (s *SQLiteStore) ListRepos(ctx context.Context) ([]*Repo, error) {
 
 func (s *SQLiteStore) GetRepo(ctx context.Context, id int64) (*Repo, error) {
 	r := &Repo{}
-	err := s.db.QueryRowContext(ctx, `SELECT id, owner, name, full_name, default_branch, etag, incident_rules, lead_time_start, period_days, created_at, updated_at FROM repos WHERE id = ?`, id).
-		Scan(&r.ID, &r.Owner, &r.Name, &r.FullName, &r.DefaultBranch, &r.ETag, &r.IncidentRules, &r.LeadTimeStart, &r.PeriodDays, &r.CreatedAt, &r.UpdatedAt)
+	err := s.db.QueryRowContext(ctx, `SELECT id, owner, name, full_name, default_branch, etag, incident_rules, lead_time_start, mttr_start, created_at, updated_at FROM repos WHERE id = ?`, id).
+		Scan(&r.ID, &r.Owner, &r.Name, &r.FullName, &r.DefaultBranch, &r.ETag, &r.IncidentRules, &r.LeadTimeStart, &r.MTTRStart, &r.CreatedAt, &r.UpdatedAt)
 	if err != nil {
 		return nil, err
 	}
@@ -91,9 +91,9 @@ func (s *SQLiteStore) GetRepo(ctx context.Context, id int64) (*Repo, error) {
 
 func (s *SQLiteStore) UpdateRepoSettings(ctx context.Context, id int64, settings *RepoSettings) error {
 	_, err := s.db.ExecContext(ctx, `
-		UPDATE repos SET incident_rules = ?, lead_time_start = ?, period_days = ?, updated_at = CURRENT_TIMESTAMP
+		UPDATE repos SET incident_rules = ?, lead_time_start = ?, mttr_start = ?, updated_at = CURRENT_TIMESTAMP
 		WHERE id = ?
-	`, settings.IncidentRules, settings.LeadTimeStart, settings.PeriodDays, id)
+	`, settings.IncidentRules, settings.LeadTimeStart, settings.MTTRStart, id)
 	return err
 }
 
@@ -105,7 +105,7 @@ func (s *SQLiteStore) UpdateRepoETag(ctx context.Context, id int64, etag string)
 // --- Groups ---
 
 func (s *SQLiteStore) ListGroups(ctx context.Context) ([]*Group, error) {
-	rows, err := s.db.QueryContext(ctx, `SELECT id, name, period_days, created_at FROM repo_groups ORDER BY name`)
+	rows, err := s.db.QueryContext(ctx, `SELECT id, name, aggregation_unit, lead_time_start, mttr_start, incident_rules, created_at FROM repo_groups ORDER BY name`)
 	if err != nil {
 		return nil, err
 	}
@@ -114,16 +114,17 @@ func (s *SQLiteStore) ListGroups(ctx context.Context) ([]*Group, error) {
 	var groups []*Group
 	for rows.Next() {
 		g := &Group{}
-		if err := rows.Scan(&g.ID, &g.Name, &g.PeriodDays, &g.CreatedAt); err != nil {
+		var incidentRules sql.NullString
+		if err := rows.Scan(&g.ID, &g.Name, &g.AggregationUnit, &g.LeadTimeStart, &g.MTTRStart, &incidentRules, &g.CreatedAt); err != nil {
 			return nil, err
 		}
+		g.IncidentRules = incidentRules.String
 		groups = append(groups, g)
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
 
-	// Load repos for each group
 	for _, g := range groups {
 		g.Repos, err = s.getGroupRepos(ctx, g.ID)
 		if err != nil {
@@ -135,11 +136,13 @@ func (s *SQLiteStore) ListGroups(ctx context.Context) ([]*Group, error) {
 
 func (s *SQLiteStore) GetGroup(ctx context.Context, id int64) (*Group, error) {
 	g := &Group{}
-	err := s.db.QueryRowContext(ctx, `SELECT id, name, period_days, created_at FROM repo_groups WHERE id = ?`, id).
-		Scan(&g.ID, &g.Name, &g.PeriodDays, &g.CreatedAt)
+	var incidentRules sql.NullString
+	err := s.db.QueryRowContext(ctx, `SELECT id, name, aggregation_unit, lead_time_start, mttr_start, incident_rules, created_at FROM repo_groups WHERE id = ?`, id).
+		Scan(&g.ID, &g.Name, &g.AggregationUnit, &g.LeadTimeStart, &g.MTTRStart, &incidentRules, &g.CreatedAt)
 	if err != nil {
 		return nil, err
 	}
+	g.IncidentRules = incidentRules.String
 	g.Repos, err = s.getGroupRepos(ctx, id)
 	if err != nil {
 		return nil, err
@@ -149,7 +152,7 @@ func (s *SQLiteStore) GetGroup(ctx context.Context, id int64) (*Group, error) {
 
 func (s *SQLiteStore) getGroupRepos(ctx context.Context, groupID int64) ([]*Repo, error) {
 	rows, err := s.db.QueryContext(ctx, `
-		SELECT r.id, r.owner, r.name, r.full_name, r.default_branch, r.etag, r.incident_rules, r.lead_time_start, r.period_days, r.created_at, r.updated_at
+		SELECT r.id, r.owner, r.name, r.full_name, r.default_branch, r.etag, r.incident_rules, r.lead_time_start, r.mttr_start, r.created_at, r.updated_at
 		FROM repos r
 		JOIN repo_group_members m ON m.repo_id = r.id
 		WHERE m.group_id = ?
@@ -163,7 +166,7 @@ func (s *SQLiteStore) getGroupRepos(ctx context.Context, groupID int64) ([]*Repo
 	var repos []*Repo
 	for rows.Next() {
 		r := &Repo{}
-		if err := rows.Scan(&r.ID, &r.Owner, &r.Name, &r.FullName, &r.DefaultBranch, &r.ETag, &r.IncidentRules, &r.LeadTimeStart, &r.PeriodDays, &r.CreatedAt, &r.UpdatedAt); err != nil {
+		if err := rows.Scan(&r.ID, &r.Owner, &r.Name, &r.FullName, &r.DefaultBranch, &r.ETag, &r.IncidentRules, &r.LeadTimeStart, &r.MTTRStart, &r.CreatedAt, &r.UpdatedAt); err != nil {
 			return nil, err
 		}
 		repos = append(repos, r)
@@ -171,14 +174,17 @@ func (s *SQLiteStore) getGroupRepos(ctx context.Context, groupID int64) ([]*Repo
 	return repos, rows.Err()
 }
 
-func (s *SQLiteStore) CreateGroup(ctx context.Context, name string, periodDays int, repoIDs []int64) (int64, error) {
+func (s *SQLiteStore) CreateGroup(ctx context.Context, name string, aggregationUnit string, repoIDs []int64) (int64, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return 0, err
 	}
 	defer tx.Rollback()
 
-	res, err := tx.ExecContext(ctx, `INSERT INTO repo_groups (name, period_days) VALUES (?, ?)`, name, periodDays)
+	if aggregationUnit == "" {
+		aggregationUnit = "weekly"
+	}
+	res, err := tx.ExecContext(ctx, `INSERT INTO repo_groups (name, aggregation_unit) VALUES (?, ?)`, name, aggregationUnit)
 	if err != nil {
 		return 0, err
 	}
@@ -196,8 +202,13 @@ func (s *SQLiteStore) CreateGroup(ctx context.Context, name string, periodDays i
 	return groupID, tx.Commit()
 }
 
-func (s *SQLiteStore) UpdateGroup(ctx context.Context, id int64, name string, periodDays int) error {
-	_, err := s.db.ExecContext(ctx, `UPDATE repo_groups SET name = ?, period_days = ? WHERE id = ?`, name, periodDays, id)
+func (s *SQLiteStore) UpdateGroup(ctx context.Context, id int64, name string, aggregationUnit string, leadTimeStart string, mttrStart string, incidentRules string) error {
+	var irVal interface{}
+	if incidentRules != "" {
+		irVal = incidentRules
+	}
+	_, err := s.db.ExecContext(ctx, `UPDATE repo_groups SET name = ?, aggregation_unit = ?, lead_time_start = ?, mttr_start = ?, incident_rules = ? WHERE id = ?`,
+		name, aggregationUnit, leadTimeStart, mttrStart, irVal, id)
 	return err
 }
 
@@ -344,6 +355,16 @@ func (s *SQLiteStore) CreateJob(ctx context.Context, groupID int64) (int64, erro
 func (s *SQLiteStore) GetJob(ctx context.Context, id int64) (*Job, error) {
 	j := &Job{}
 	err := s.db.QueryRowContext(ctx, `SELECT id, group_id, status, progress, error, started_at, completed_at FROM jobs WHERE id = ?`, id).
+		Scan(&j.ID, &j.GroupID, &j.Status, &j.Progress, &j.Error, &j.StartedAt, &j.CompletedAt)
+	if err != nil {
+		return nil, err
+	}
+	return j, nil
+}
+
+func (s *SQLiteStore) GetLatestJobByGroup(ctx context.Context, groupID int64) (*Job, error) {
+	j := &Job{}
+	err := s.db.QueryRowContext(ctx, `SELECT id, group_id, status, progress, error, started_at, completed_at FROM jobs WHERE group_id = ? ORDER BY id DESC LIMIT 1`, groupID).
 		Scan(&j.ID, &j.GroupID, &j.Status, &j.Progress, &j.Error, &j.StartedAt, &j.CompletedAt)
 	if err != nil {
 		return nil, err

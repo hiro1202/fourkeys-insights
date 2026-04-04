@@ -26,9 +26,11 @@ func NewRouter(h *Handler, logger *zap.Logger) *chi.Mux {
 		// Groups
 		r.Get("/groups", h.ListGroups)
 		r.Post("/groups", h.CreateGroup)
-		r.Put("/groups/{id}", h.UpdateGroup)
 		r.Delete("/groups/{id}", h.DeleteGroup)
 		r.Get("/groups/{id}/metrics", h.GetGroupMetrics)
+		r.Get("/groups/{id}/trends", h.GetGroupTrends)
+		r.Get("/groups/{id}/settings", h.GetGroupSettings)
+		r.Put("/groups/{id}/settings", h.UpdateGroupSettings)
 		r.Get("/groups/{id}/export", h.ExportCSV)
 		r.Get("/groups/{id}/badge", h.GetBadge)
 		r.Get("/groups/{id}/pulls", h.ListGroupPulls)

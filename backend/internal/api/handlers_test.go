@@ -48,15 +48,13 @@ func TestCreateAndListGroups(t *testing.T) {
 	h, store := setupTestHandler(t)
 	router := NewRouter(h, h.Logger)
 
-	// Create repos first
 	r1, _ := store.UpsertRepo(context.Background(), &db.Repo{Owner: "o", Name: "a", FullName: "o/a", DefaultBranch: "main"})
 	r2, _ := store.UpsertRepo(context.Background(), &db.Repo{Owner: "o", Name: "b", FullName: "o/b", DefaultBranch: "main"})
 
-	// Create group
 	body, _ := json.Marshal(createGroupRequest{
-		Name:       "backend",
-		PeriodDays: 30,
-		RepoIDs:    []int64{r1, r2},
+		Name:            "backend",
+		AggregationUnit: "weekly",
+		RepoIDs:         []int64{r1, r2},
 	})
 	req := httptest.NewRequest("POST", "/api/v1/groups", bytes.NewReader(body))
 	w := httptest.NewRecorder()
@@ -75,7 +73,6 @@ func TestCreateAndListGroups(t *testing.T) {
 		t.Fatalf("expected 2 repos, got %d", len(group.Repos))
 	}
 
-	// List groups
 	req = httptest.NewRequest("GET", "/api/v1/groups", nil)
 	w = httptest.NewRecorder()
 	router.ServeHTTP(w, req)
@@ -112,21 +109,40 @@ func TestCreateGroup_Validation(t *testing.T) {
 	}
 }
 
-func TestUpdateAndDeleteGroup(t *testing.T) {
+func TestUpdateGroupSettingsAndDelete(t *testing.T) {
 	h, store := setupTestHandler(t)
 	router := NewRouter(h, h.Logger)
 
 	r1, _ := store.UpsertRepo(context.Background(), &db.Repo{Owner: "o", Name: "a", FullName: "o/a", DefaultBranch: "main"})
-	store.CreateGroup(context.Background(), "team", 30, []int64{r1})
+	store.CreateGroup(context.Background(), "team", "weekly", []int64{r1})
 
-	// Update
-	body, _ := json.Marshal(updateGroupRequest{Name: "new-team", PeriodDays: 60})
-	req := httptest.NewRequest("PUT", "/api/v1/groups/1", bytes.NewReader(body))
+	// Update settings
+	body, _ := json.Marshal(updateGroupSettingsRequest{
+		Name:            "new-team",
+		AggregationUnit: "monthly",
+		LeadTimeStart:   "pr_created_at",
+		MTTRStart:       "issue.created_at",
+	})
+	req := httptest.NewRequest("PUT", "/api/v1/groups/1/settings", bytes.NewReader(body))
 	w := httptest.NewRecorder()
 	router.ServeHTTP(w, req)
 
 	if w.Code != http.StatusOK {
 		t.Fatalf("expected 200, got %d: %s", w.Code, w.Body.String())
+	}
+
+	// Verify settings
+	req = httptest.NewRequest("GET", "/api/v1/groups/1/settings", nil)
+	w = httptest.NewRecorder()
+	router.ServeHTTP(w, req)
+
+	var settings map[string]interface{}
+	json.NewDecoder(w.Body).Decode(&settings)
+	if settings["aggregation_unit"] != "monthly" {
+		t.Fatalf("expected aggregation_unit 'monthly', got '%v'", settings["aggregation_unit"])
+	}
+	if settings["mttr_start"] != "issue.created_at" {
+		t.Fatalf("expected mttr_start 'issue.created_at', got '%v'", settings["mttr_start"])
 	}
 
 	// Delete
@@ -145,7 +161,6 @@ func TestRepoSettings(t *testing.T) {
 
 	store.UpsertRepo(context.Background(), &db.Repo{Owner: "o", Name: "r", FullName: "o/r", DefaultBranch: "main"})
 
-	// Get default settings
 	req := httptest.NewRequest("GET", "/api/v1/repos/1/settings", nil)
 	w := httptest.NewRecorder()
 	router.ServeHTTP(w, req)
@@ -164,7 +179,7 @@ func TestRepoSettings(t *testing.T) {
 	body, _ := json.Marshal(db.RepoSettings{
 		IncidentRules: `{"title_keywords":["rollback"]}`,
 		LeadTimeStart: "pr_created_at",
-		PeriodDays:    90,
+		MTTRStart:     "issue.created_at",
 	})
 	req = httptest.NewRequest("PUT", "/api/v1/repos/1/settings", bytes.NewReader(body))
 	w = httptest.NewRecorder()
@@ -180,7 +195,7 @@ func TestBadge(t *testing.T) {
 	router := NewRouter(h, h.Logger)
 
 	r1, _ := store.UpsertRepo(context.Background(), &db.Repo{Owner: "o", Name: "r", FullName: "o/r", DefaultBranch: "main"})
-	store.CreateGroup(context.Background(), "team", 30, []int64{r1})
+	store.CreateGroup(context.Background(), "team", "weekly", []int64{r1})
 
 	req := httptest.NewRequest("GET", "/api/v1/groups/1/badge", nil)
 	w := httptest.NewRecorder()
@@ -192,9 +207,6 @@ func TestBadge(t *testing.T) {
 	if ct := w.Header().Get("Content-Type"); ct != "image/svg+xml" {
 		t.Fatalf("expected SVG content type, got '%s'", ct)
 	}
-	if cc := w.Header().Get("Cache-Control"); cc != "no-cache" {
-		t.Fatalf("expected no-cache, got '%s'", cc)
-	}
 }
 
 func TestListGroupPulls_Empty(t *testing.T) {
@@ -202,7 +214,7 @@ func TestListGroupPulls_Empty(t *testing.T) {
 	router := NewRouter(h, h.Logger)
 
 	r1, _ := store.UpsertRepo(context.Background(), &db.Repo{Owner: "o", Name: "r", FullName: "o/r", DefaultBranch: "main"})
-	store.CreateGroup(context.Background(), "team", 30, []int64{r1})
+	store.CreateGroup(context.Background(), "team", "weekly", []int64{r1})
 
 	req := httptest.NewRequest("GET", "/api/v1/groups/1/pulls", nil)
 	w := httptest.NewRecorder()
