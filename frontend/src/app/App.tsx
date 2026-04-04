@@ -11,6 +11,7 @@ export function App() {
         <Header />
         <Routes>
           <Route path="/" element={<SetupPage />} />
+          <Route path="/setup" element={<SetupPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Routes>
