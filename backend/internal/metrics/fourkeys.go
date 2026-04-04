@@ -93,11 +93,14 @@ func Calculate(input CalculateInput) FourKeysResult {
 	result.LeadTimeHours = medianLT.Hours()
 	result.LeadTimeLevel = classifyLeadTime(medianLT)
 
-	// Deploy Frequency
+	// Deploy Frequency (total deploys in the period)
+	result.DeployFrequency = float64(len(input.PRs))
 	if input.PeriodDays > 0 {
-		result.DeployFrequency = float64(len(input.PRs)) / float64(input.PeriodDays)
+		perDay := float64(len(input.PRs)) / float64(input.PeriodDays)
+		result.DeployFrequencyLevel = classifyDeployFrequency(perDay)
+	} else {
+		result.DeployFrequencyLevel = classifyDeployFrequency(0)
 	}
-	result.DeployFrequencyLevel = classifyDeployFrequency(result.DeployFrequency)
 
 	// Change Failure Rate
 	if len(input.PRs) > 0 {

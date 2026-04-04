@@ -12,17 +12,12 @@ export function StatusBar({ metrics }: StatusBarProps) {
     return new Date(dateStr).toLocaleDateString()
   }
 
-  const formatDateTime = (dateStr: string) => {
-    const d = new Date(dateStr)
-    return `${d.toLocaleDateString()} ${d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
-  }
-
   const unitLabel = metrics.aggregation_unit === 'monthly'
     ? t('settings.aggregation_monthly')
     : t('settings.aggregation_weekly')
 
   return (
-    <div className="flex flex-wrap items-center gap-4 text-xs text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-2">
+    <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-2">
       <span>
         {t('status.period')}: {formatDate(metrics.period_start)} ~ {formatDate(metrics.period_end)} ({unitLabel})
       </span>
@@ -34,14 +29,10 @@ export function StatusBar({ metrics }: StatusBarProps) {
       <span>
         {t('status.lead_time_start')}: {t(`settings.lead_time_${metrics.lead_time_start.replace('.', '_').replace('_at', '')}`)}
       </span>
-      {metrics.last_sync_at && (
-        <>
-          <span className="text-gray-300 dark:text-gray-600">|</span>
-          <span>
-            {t('status.last_sync')}: {formatDateTime(metrics.last_sync_at)}
-          </span>
-        </>
-      )}
+      <span className="text-gray-300 dark:text-gray-600">|</span>
+      <span>
+        {t('status.mttr_start')}: {t(`settings.lead_time_${metrics.mttr_start.replace('.', '_').replace('_at', '')}`)}
+      </span>
       {metrics.fallback_count > 0 && (
         <>
           <span className="text-gray-300 dark:text-gray-600">|</span>

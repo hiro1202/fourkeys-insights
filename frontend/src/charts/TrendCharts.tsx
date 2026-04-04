@@ -48,7 +48,7 @@ export function TrendCharts({ dataPoints, unit, trendPreset, onPresetChange }: T
     grid: gridStyle,
     title: { text: t('dashboard.deploy_freq'), textStyle: { fontSize: 13 }, left: 'center' },
     xAxis: { type: 'category' as const, data: labels, axisLabel },
-    yAxis: { type: 'value' as const, name: t('dashboard.per_day'), nameTextStyle: { fontSize: 10 } },
+    yAxis: { type: 'value' as const, name: t('dashboard.deploys_unit'), nameTextStyle: { fontSize: 10 } },
     series: [{
       data: dataPoints.map(p => p.deploy_frequency),
       type: 'line' as const,

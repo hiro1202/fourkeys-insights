@@ -71,7 +71,7 @@ export function DashboardPage() {
     <div className="max-w-6xl mx-auto py-6 px-4 space-y-6">
       {/* Top bar */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           <select
             value={groupId ?? ''}
             onChange={e => setSelectedGroupId(Number(e.target.value))}
@@ -81,6 +81,13 @@ export function DashboardPage() {
               <option key={g.id} value={g.id}>{g.name}</option>
             ))}
           </select>
+          <button
+            onClick={() => navigate('/setup')}
+            className="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
+            title={t('settings.new_group')}
+          >
+            + {t('settings.new_group')}
+          </button>
         </div>
         <div className="flex items-center gap-3">
           <button
@@ -105,6 +112,7 @@ export function DashboardPage() {
           jobId={jobId}
           onJobStarted={setJobId}
           onComplete={handleSyncComplete}
+          lastSyncAt={metrics?.last_sync_at}
         />
       )}
 
@@ -127,8 +135,8 @@ export function DashboardPage() {
             <MetricsCard
               title={t('dashboard.deploy_freq')}
               description={t('dashboard.deploy_freq_desc')}
-              value={metrics.deploy_frequency.toFixed(2)}
-              unit={t('dashboard.per_day')}
+              value={String(Math.round(metrics.deploy_frequency))}
+              unit={t('dashboard.deploys_unit')}
               level={metrics.deploy_frequency_level}
               previousValue={prev?.deploy_frequency}
               currentValue={metrics.deploy_frequency}
@@ -150,16 +158,10 @@ export function DashboardPage() {
               value={metrics.mttr_hours !== null ? formatValue(metrics.mttr_hours).value : t('dashboard.na')}
               unit={metrics.mttr_hours !== null ? formatValue(metrics.mttr_hours).unit : ''}
               level={metrics.mttr_level ?? 'low'}
-              badge={t('dashboard.mttr_proxy_badge')}
               previousValue={prev?.mttr_hours}
               currentValue={metrics.mttr_hours}
               invertComparison={true}
             />
-          </div>
-
-          {/* Period display */}
-          <div className="text-xs text-gray-500 dark:text-gray-400 text-center">
-            {metrics.period_start} ~ {metrics.period_end}
           </div>
 
           {/* Trend Charts */}

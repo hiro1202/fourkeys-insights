@@ -85,7 +85,7 @@ export function SettingsPage() {
       </div>
 
       {/* Group selector */}
-      {groups && groups.length > 1 && (
+      {groups && groups.length > 1 ? (
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             {t('dashboard.group_select')}
@@ -100,7 +100,9 @@ export function SettingsPage() {
             ))}
           </select>
         </div>
-      )}
+      ) : groups && groups.length === 1 ? (
+        <p className="text-sm text-gray-600 dark:text-gray-400">{groups[0].name}</p>
+      ) : null}
 
       {/* Aggregation Unit */}
       <div>
@@ -213,6 +215,20 @@ export function SettingsPage() {
         </div>
       </div>
 
+      {/* Save */}
+      <div className="flex items-center gap-3">
+        <button
+          onClick={handleSave}
+          disabled={updateSettings.isPending}
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+        >
+          {updateSettings.isPending ? '...' : t('settings.save')}
+        </button>
+        {saved && (
+          <span className="text-sm text-green-600 dark:text-green-400">{t('settings.saved')}</span>
+        )}
+      </div>
+
       {/* Repositories (display only) */}
       {settings?.repos && settings.repos.length > 0 && (
         <div>
@@ -228,20 +244,6 @@ export function SettingsPage() {
           </div>
         </div>
       )}
-
-      {/* Save */}
-      <div className="flex items-center gap-3">
-        <button
-          onClick={handleSave}
-          disabled={updateSettings.isPending}
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
-        >
-          {updateSettings.isPending ? '...' : t('settings.save')}
-        </button>
-        {saved && (
-          <span className="text-sm text-green-600 dark:text-green-400">{t('settings.saved')}</span>
-        )}
-      </div>
 
       {/* Delete Group */}
       <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
