@@ -26,6 +26,11 @@ jobs:
         with:
           go-version: '1.23'
 
+      - name: Create embed placeholder
+        run: |
+          mkdir -p internal/static/dist
+          echo '<!doctype html>' > internal/static/dist/index.html
+
       - name: Format check
         run: |
           unformatted=$(gofmt -l .)
