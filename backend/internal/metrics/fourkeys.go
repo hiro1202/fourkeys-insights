@@ -18,17 +18,17 @@ type FourKeysResult struct {
 	// Mean Time to Restore (median of incident PR lead times, in hours)
 	MTTRHours *float64 `json:"mttr_hours"` // nil when no incidents
 	// DORA level for each metric
-	LeadTimeLevel         string `json:"lead_time_level"`
-	DeployFrequencyLevel  string `json:"deploy_frequency_level"`
-	ChangeFailureRateLevel string `json:"change_failure_rate_level"`
-	MTTRLevel             *string `json:"mttr_level"` // nil when no incidents
+	LeadTimeLevel          string  `json:"lead_time_level"`
+	DeployFrequencyLevel   string  `json:"deploy_frequency_level"`
+	ChangeFailureRateLevel string  `json:"change_failure_rate_level"`
+	MTTRLevel              *string `json:"mttr_level"` // nil when no incidents
 	// Overall DORA level (lowest of all four)
 	OverallLevel string `json:"overall_level"`
 	// Metadata
-	TotalPRs        int  `json:"total_prs"`
-	IncidentPRs     int  `json:"incident_prs"`
-	PeriodDays      int  `json:"period_days"`
-	FallbackCount   int  `json:"fallback_count"`
+	TotalPRs      int `json:"total_prs"`
+	IncidentPRs   int `json:"incident_prs"`
+	PeriodDays    int `json:"period_days"`
+	FallbackCount int `json:"fallback_count"`
 }
 
 // CalculateInput holds the inputs for Four Keys calculation.

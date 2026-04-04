@@ -1,0 +1,23 @@
+pre-commit:
+  parallel: true
+  commands:
+    gofmt:
+      glob: "**/*.go"
+      root: "backend/"
+      run: test -z "$(gofmt -l {staged_files})" || (gofmt -l {staged_files} && exit 1)
+    go-vet:
+      glob: "**/*.go"
+      root: "backend/"
+      run: go vet ./...
+    go-test:
+      glob: "**/*.go"
+      root: "backend/"
+      run: CGO_ENABLED=1 go test ./... -short
+    tsc:
+      glob: "**/*.{ts,tsx}"
+      root: "frontend/"
+      run: npx tsc --noEmit
+    i18n:
+      glob: "**/*.json"
+      root: "frontend/"
+      run: node scripts/check-i18n.js

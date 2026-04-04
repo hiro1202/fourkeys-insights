@@ -16,10 +16,10 @@ import (
 
 // Handler holds dependencies for HTTP handlers.
 type Handler struct {
-	Store    db.Store
-	GitHub   *gh.Client
-	Queue    *jobs.Queue
-	Logger   *zap.Logger
+	Store  db.Store
+	GitHub *gh.Client
+	Queue  *jobs.Queue
+	Logger *zap.Logger
 }
 
 // --- Auth ---

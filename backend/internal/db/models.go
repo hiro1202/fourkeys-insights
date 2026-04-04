@@ -26,11 +26,11 @@ type RepoSettings struct {
 }
 
 type Group struct {
-	ID        int64     `json:"id"`
-	Name      string    `json:"name"`
-	PeriodDays int      `json:"period_days"`
-	CreatedAt time.Time `json:"created_at"`
-	Repos     []*Repo   `json:"repos,omitempty"`
+	ID         int64     `json:"id"`
+	Name       string    `json:"name"`
+	PeriodDays int       `json:"period_days"`
+	CreatedAt  time.Time `json:"created_at"`
+	Repos      []*Repo   `json:"repos,omitempty"`
 }
 
 type PullRequest struct {

@@ -19,7 +19,7 @@ type RepoInfo struct {
 // Uses pagination with per_page=100 as specified in DESIGN.md.
 func (c *Client) ListAccessibleRepos(ctx context.Context) ([]RepoInfo, error) {
 	var all []RepoInfo
-	opts := &gh.RepositoryListOptions{
+	opts := &gh.RepositoryListByAuthenticatedUserOptions{
 		Type: "all",
 		ListOptions: gh.ListOptions{
 			PerPage: 100,
@@ -27,7 +27,7 @@ func (c *Client) ListAccessibleRepos(ctx context.Context) ([]RepoInfo, error) {
 	}
 
 	for {
-		repos, resp, err := c.client.Repositories.List(ctx, "", opts)
+		repos, resp, err := c.client.Repositories.ListByAuthenticatedUser(ctx, opts)
 		if err != nil {
 			return nil, err
 		}
