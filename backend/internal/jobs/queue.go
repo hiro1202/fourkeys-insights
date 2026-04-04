@@ -2,7 +2,6 @@ package jobs
 
 import (
 	"context"
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"sync"
@@ -159,32 +158,32 @@ func (q *Queue) syncRepo(ctx context.Context, repo *db.Repo) error {
 		}
 
 		// Parse issue reference from PR body
-		var linkedIssueNumber sql.NullInt64
-		var linkedIssueCreatedAt sql.NullTime
+		var linkedIssueNumber db.JSONNullInt64
+		var linkedIssueCreatedAt db.JSONNullTime
 
 		if issueNum := gh.ParseIssueReference(prInfo.Body); issueNum > 0 {
-			linkedIssueNumber = sql.NullInt64{Int64: int64(issueNum), Valid: true}
+			linkedIssueNumber = db.NewJSONNullInt64(int64(issueNum), true)
 			if issueCreatedAt, err := q.gh.GetIssueCreatedAt(ctx, repo.Owner, repo.Name, issueNum); err == nil {
-				linkedIssueCreatedAt = sql.NullTime{Time: issueCreatedAt, Valid: true}
+				linkedIssueCreatedAt = db.NewJSONNullTime(issueCreatedAt, true)
 			} else {
 				q.logger.Warn("failed to get issue created_at", zap.String("repo", repo.FullName), zap.Int("issue", issueNum), zap.Error(err))
 			}
 		}
 
 		// Labels to JSON
-		var labelsJSON sql.NullString
+		var labelsJSON db.JSONNullString
 		if len(prInfo.Labels) > 0 {
 			b, _ := json.Marshal(prInfo.Labels)
-			labelsJSON = sql.NullString{String: string(b), Valid: true}
+			labelsJSON = db.NewJSONNullString(string(b), true)
 		}
 
 		pr := &db.PullRequest{
 			RepoID:               repo.ID,
 			PRNumber:             prInfo.Number,
 			Title:                prInfo.Title,
-			BranchName:           sql.NullString{String: prInfo.Branch, Valid: prInfo.Branch != ""},
+			BranchName:           db.NewJSONNullString(prInfo.Branch, prInfo.Branch != ""),
 			Labels:               labelsJSON,
-			Body:                 sql.NullString{String: prInfo.Body, Valid: prInfo.Body != ""},
+			Body:                 db.NewJSONNullString(prInfo.Body, prInfo.Body != ""),
 			Additions:            prInfo.Additions,
 			Deletions:            prInfo.Deletions,
 			CreatedAt:            prInfo.CreatedAt,
@@ -194,7 +193,7 @@ func (q *Queue) syncRepo(ctx context.Context, repo *db.Repo) error {
 		}
 
 		if !firstCommitAt.IsZero() {
-			pr.FirstCommitAt = sql.NullTime{Time: firstCommitAt, Valid: true}
+			pr.FirstCommitAt = db.NewJSONNullTime(firstCommitAt, true)
 		}
 
 		if err := q.store.UpsertPullRequest(ctx, pr); err != nil {

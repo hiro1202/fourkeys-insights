@@ -1,7 +1,6 @@
 package db
 
 import (
-	"database/sql"
 	"time"
 )
 
@@ -11,8 +10,8 @@ type Repo struct {
 	Name          string         `json:"name"`
 	FullName      string         `json:"full_name"`
 	DefaultBranch string         `json:"default_branch"`
-	ETag          sql.NullString `json:"-"`
-	IncidentRules sql.NullString `json:"incident_rules"`
+	ETag          JSONNullString `json:"-"`
+	IncidentRules JSONNullString `json:"incident_rules"`
 	LeadTimeStart string         `json:"lead_time_start"`
 	PeriodDays    int            `json:"period_days"`
 	CreatedAt     time.Time      `json:"created_at"`
@@ -38,16 +37,16 @@ type PullRequest struct {
 	RepoID               int64          `json:"repo_id"`
 	PRNumber             int            `json:"pr_number"`
 	Title                string         `json:"title"`
-	BranchName           sql.NullString `json:"branch_name"`
-	Labels               sql.NullString `json:"labels"`
-	Body                 sql.NullString `json:"body"`
+	BranchName           JSONNullString `json:"branch_name"`
+	Labels               JSONNullString `json:"labels"`
+	Body                 JSONNullString `json:"body"`
 	Additions            int            `json:"additions"`
 	Deletions            int            `json:"deletions"`
-	FirstCommitAt        sql.NullTime   `json:"first_commit_at"`
+	FirstCommitAt        JSONNullTime   `json:"first_commit_at"`
 	CreatedAt            time.Time      `json:"created_at"`
 	MergedAt             time.Time      `json:"merged_at"`
-	LinkedIssueNumber    sql.NullInt64  `json:"linked_issue_number"`
-	LinkedIssueCreatedAt sql.NullTime   `json:"linked_issue_created_at"`
+	LinkedIssueNumber    JSONNullInt64  `json:"linked_issue_number"`
+	LinkedIssueCreatedAt JSONNullTime   `json:"linked_issue_created_at"`
 
 	// Joined fields (not in DB)
 	RepoFullName string `json:"repo_full_name,omitempty"`
@@ -55,12 +54,12 @@ type PullRequest struct {
 
 type Job struct {
 	ID          int64          `json:"id"`
-	GroupID     sql.NullInt64  `json:"group_id"`
+	GroupID     JSONNullInt64  `json:"group_id"`
 	Status      string         `json:"status"`
-	Progress    sql.NullString `json:"progress"`
-	Error       sql.NullString `json:"error"`
-	StartedAt   sql.NullTime   `json:"started_at"`
-	CompletedAt sql.NullTime   `json:"completed_at"`
+	Progress    JSONNullString `json:"progress"`
+	Error       JSONNullString `json:"error"`
+	StartedAt   JSONNullTime   `json:"started_at"`
+	CompletedAt JSONNullTime   `json:"completed_at"`
 }
 
 type JobProgress struct {
