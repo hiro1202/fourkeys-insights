@@ -2,7 +2,6 @@ package db
 
 import (
 	"context"
-	"database/sql"
 	"testing"
 	"time"
 )
@@ -139,7 +138,7 @@ func TestPullRequestUpsertAndList(t *testing.T) {
 		RepoID:     repoID,
 		PRNumber:   42,
 		Title:      "Fix login bug",
-		BranchName: sql.NullString{String: "hotfix/login", Valid: true},
+		BranchName: NewJSONNullString("hotfix/login", true),
 		Additions:  10,
 		Deletions:  5,
 		CreatedAt:  now.Add(-24 * time.Hour),

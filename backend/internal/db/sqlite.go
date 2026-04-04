@@ -352,23 +352,23 @@ func (s *SQLiteStore) GetJob(ctx context.Context, id int64) (*Job, error) {
 }
 
 func (s *SQLiteStore) UpdateJobStatus(ctx context.Context, id int64, status string, progress *JobProgress, errMsg string) error {
-	var progressJSON sql.NullString
+	var progressJSON JSONNullString
 	if progress != nil {
 		b, err := json.Marshal(progress)
 		if err != nil {
 			return err
 		}
-		progressJSON = sql.NullString{String: string(b), Valid: true}
+		progressJSON = NewJSONNullString(string(b), true)
 	}
 
-	var errorVal sql.NullString
+	var errorVal JSONNullString
 	if errMsg != "" {
-		errorVal = sql.NullString{String: errMsg, Valid: true}
+		errorVal = NewJSONNullString(errMsg, true)
 	}
 
-	completedAt := sql.NullTime{}
+	completedAt := JSONNullTime{}
 	if status == "complete" || status == "failed" || status == "cancelled" {
-		completedAt = sql.NullTime{Time: time.Now().UTC(), Valid: true}
+		completedAt = NewJSONNullTime(time.Now().UTC(), true)
 	}
 
 	_, err := s.db.ExecContext(ctx, `

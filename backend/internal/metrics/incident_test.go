@@ -1,7 +1,6 @@
 package metrics
 
 import (
-	"database/sql"
 	"testing"
 
 	"github.com/hiro1202/fourkeys-insights/internal/db"
@@ -29,7 +28,7 @@ func TestIsIncident(t *testing.T) {
 			name: "hotfix in branch",
 			pr: &db.PullRequest{
 				Title:      "Fix auth",
-				BranchName: sql.NullString{String: "hotfix/auth-fix", Valid: true},
+				BranchName: db.NewJSONNullString("hotfix/auth-fix", true),
 			},
 			want: true,
 		},
@@ -37,7 +36,7 @@ func TestIsIncident(t *testing.T) {
 			name: "bug label",
 			pr: &db.PullRequest{
 				Title:  "Update handler",
-				Labels: sql.NullString{String: `["bug","enhancement"]`, Valid: true},
+				Labels: db.NewJSONNullString(`["bug","enhancement"]`, true),
 			},
 			want: true,
 		},
@@ -45,7 +44,7 @@ func TestIsIncident(t *testing.T) {
 			name: "incident label",
 			pr: &db.PullRequest{
 				Title:  "Fix outage",
-				Labels: sql.NullString{String: `["incident"]`, Valid: true},
+				Labels: db.NewJSONNullString(`["incident"]`, true),
 			},
 			want: true,
 		},
@@ -53,8 +52,8 @@ func TestIsIncident(t *testing.T) {
 			name: "normal PR",
 			pr: &db.PullRequest{
 				Title:      "Add new feature",
-				BranchName: sql.NullString{String: "feature/new-thing", Valid: true},
-				Labels:     sql.NullString{String: `["enhancement"]`, Valid: true},
+				BranchName: db.NewJSONNullString("feature/new-thing", true),
+				Labels:     db.NewJSONNullString(`["enhancement"]`, true),
 			},
 			want: false,
 		},

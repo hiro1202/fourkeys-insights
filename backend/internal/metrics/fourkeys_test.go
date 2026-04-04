@@ -1,7 +1,6 @@
 package metrics
 
 import (
-	"database/sql"
 	"math"
 	"testing"
 	"time"
@@ -16,7 +15,7 @@ func TestCalculateBasic(t *testing.T) {
 			RepoID:        1,
 			PRNumber:      1,
 			Title:         "Add feature A",
-			FirstCommitAt: sql.NullTime{Time: now.Add(-48 * time.Hour), Valid: true},
+			FirstCommitAt: db.NewJSONNullTime(now.Add(-48*time.Hour), true),
 			CreatedAt:     now.Add(-47 * time.Hour),
 			MergedAt:      now.Add(-24 * time.Hour),
 		},
@@ -24,7 +23,7 @@ func TestCalculateBasic(t *testing.T) {
 			RepoID:        1,
 			PRNumber:      2,
 			Title:         "Add feature B",
-			FirstCommitAt: sql.NullTime{Time: now.Add(-72 * time.Hour), Valid: true},
+			FirstCommitAt: db.NewJSONNullTime(now.Add(-72*time.Hour), true),
 			CreatedAt:     now.Add(-70 * time.Hour),
 			MergedAt:      now.Add(-48 * time.Hour),
 		},
@@ -32,7 +31,7 @@ func TestCalculateBasic(t *testing.T) {
 			RepoID:        1,
 			PRNumber:      3,
 			Title:         "Revert feature A",
-			FirstCommitAt: sql.NullTime{Time: now.Add(-12 * time.Hour), Valid: true},
+			FirstCommitAt: db.NewJSONNullTime(now.Add(-12*time.Hour), true),
 			CreatedAt:     now.Add(-11 * time.Hour),
 			MergedAt:      now.Add(-6 * time.Hour),
 		},
@@ -105,7 +104,7 @@ func TestCalculateNoIncidents(t *testing.T) {
 			RepoID:        1,
 			PRNumber:      1,
 			Title:         "Add feature",
-			FirstCommitAt: sql.NullTime{Time: now.Add(-24 * time.Hour), Valid: true},
+			FirstCommitAt: db.NewJSONNullTime(now.Add(-24*time.Hour), true),
 			CreatedAt:     now.Add(-23 * time.Hour),
 			MergedAt:      now,
 		},
