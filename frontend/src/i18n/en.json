@@ -87,7 +87,7 @@
   "settings.lead_time_start": "Change Lead Time Start Point",
   "settings.lead_time_start_desc": "The starting point for measuring change lead time.",
   "settings.mttr_start": "MTTR Start Point",
-  "settings.mttr_start_desc": "The starting point for measuring MTTR. Combining with automated issue creation on incidents makes Issue Created a close approximation of detection time, improving MTTR accuracy.",
+  "settings.mttr_start_desc": "The starting point for measuring MTTR. Combining with automated issue creation on incidents makes Issue Created a close approximation of detection time, improving Mean Time to Restore accuracy.",
   "settings.lead_time_first_commit": "First Commit",
   "settings.lead_time_first_commit_recommended": "First Commit (recommended)",
   "settings.lead_time_first_commit_desc": "Branch's first commit time. Falls back to PR created if unavailable.",
