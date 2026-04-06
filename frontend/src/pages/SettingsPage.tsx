@@ -66,7 +66,13 @@ export function SettingsPage() {
     navigate('/dashboard')
   }
 
-  const startPointOptions = [
+  const leadTimeStartOptions = [
+    { value: 'first_commit_at', label: t('settings.lead_time_first_commit_recommended'), desc: t('settings.lead_time_first_commit_desc') },
+    { value: 'issue.created_at', label: t('settings.lead_time_issue_created'), desc: t('settings.lead_time_issue_created_desc') },
+    { value: 'pr_created_at', label: t('settings.lead_time_pr_created'), desc: t('settings.lead_time_pr_created_desc') },
+  ]
+
+  const mttrStartOptions = [
     { value: 'first_commit_at', label: t('settings.lead_time_first_commit'), desc: t('settings.lead_time_first_commit_desc') },
     { value: 'issue.created_at', label: t('settings.lead_time_issue_created'), desc: t('settings.lead_time_issue_created_desc') },
     { value: 'pr_created_at', label: t('settings.lead_time_pr_created'), desc: t('settings.lead_time_pr_created_desc') },
@@ -134,12 +140,12 @@ export function SettingsPage() {
           onChange={e => setLeadTimeStart(e.target.value)}
           className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
         >
-          {startPointOptions.map(opt => (
+          {leadTimeStartOptions.map(opt => (
             <option key={opt.value} value={opt.value}>{opt.label}</option>
           ))}
         </select>
         <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-          {startPointOptions.find(o => o.value === leadTimeStart)?.desc}
+          {leadTimeStartOptions.find(o => o.value === leadTimeStart)?.desc}
         </p>
       </div>
 
@@ -154,12 +160,12 @@ export function SettingsPage() {
           onChange={e => setMttrStart(e.target.value)}
           className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
         >
-          {startPointOptions.map(opt => (
+          {mttrStartOptions.map(opt => (
             <option key={opt.value} value={opt.value}>{opt.label}</option>
           ))}
         </select>
         <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-          {startPointOptions.find(o => o.value === mttrStart)?.desc}
+          {mttrStartOptions.find(o => o.value === mttrStart)?.desc}
         </p>
       </div>
 
