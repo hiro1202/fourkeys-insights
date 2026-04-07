@@ -10,9 +10,15 @@ export function SettingsPage() {
   const { data: groups } = useGroups()
   const groupId = groupIdParam ? Number(groupIdParam) : groups?.[0]?.id ?? null
 
-  // Redirect to URL with groupId when accessed without one
+  // Redirect to URL with groupId when accessed without one or groupId doesn't exist
   useEffect(() => {
-    if (!groupIdParam && groups && groups.length > 0) {
+    if (!groups || groups.length === 0) return
+    if (!groupIdParam) {
+      navigate(`/settings/groups/${groups[0].id}`, { replace: true })
+      return
+    }
+    const exists = groups.some(g => g.id === Number(groupIdParam))
+    if (!exists) {
       navigate(`/settings/groups/${groups[0].id}`, { replace: true })
     }
   }, [groupIdParam, groups, navigate])

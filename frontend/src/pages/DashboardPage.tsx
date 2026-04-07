@@ -20,9 +20,15 @@ export function DashboardPage() {
 
   const groupId = groupIdParam ? Number(groupIdParam) : null
 
-  // Redirect to first group when no groupId in URL
+  // Redirect to first group when no groupId in URL or groupId doesn't exist
   useEffect(() => {
-    if (!groupIdParam && groups && groups.length > 0) {
+    if (!groups || groups.length === 0) return
+    if (!groupIdParam) {
+      navigate(`/dashboard/groups/${groups[0].id}`, { replace: true })
+      return
+    }
+    const exists = groups.some(g => g.id === Number(groupIdParam))
+    if (!exists) {
       navigate(`/dashboard/groups/${groups[0].id}`, { replace: true })
     }
   }, [groupIdParam, groups, navigate])
