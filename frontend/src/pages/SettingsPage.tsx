@@ -1,15 +1,21 @@
 import { useState, useEffect } from 'react'
-import { useSearchParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { useI18n } from '../i18n/context'
 import { useGroupSettings, useUpdateGroupSettings, useGroups, useDeleteGroup } from '../api/hooks'
 
 export function SettingsPage() {
   const { t } = useI18n()
   const navigate = useNavigate()
-  const [searchParams] = useSearchParams()
-  const groupIdParam = searchParams.get('groupId')
+  const { groupId: groupIdParam } = useParams<{ groupId: string }>()
   const { data: groups } = useGroups()
   const groupId = groupIdParam ? Number(groupIdParam) : groups?.[0]?.id ?? null
+
+  // Redirect to URL with groupId when accessed without one
+  useEffect(() => {
+    if (!groupIdParam && groups && groups.length > 0) {
+      navigate(`/settings/groups/${groups[0].id}`, { replace: true })
+    }
+  }, [groupIdParam, groups, navigate])
   const { data: settings } = useGroupSettings(groupId)
   const updateSettings = useUpdateGroupSettings()
   const deleteGroup = useDeleteGroup()
@@ -63,7 +69,7 @@ export function SettingsPage() {
     if (!groupId) return
     if (!window.confirm(t('settings.delete_group_confirm'))) return
     await deleteGroup.mutateAsync(groupId)
-    navigate('/dashboard')
+    navigate('/dashboard', { replace: true })
   }
 
   const leadTimeStartOptions = [
@@ -83,7 +89,7 @@ export function SettingsPage() {
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold">{t('settings.title')}</h2>
         <button
-          onClick={() => navigate('/dashboard')}
+          onClick={() => navigate(groupId ? `/dashboard/groups/${groupId}` : '/dashboard')}
           className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
         >
           {t('dashboard.title')} →
@@ -98,7 +104,7 @@ export function SettingsPage() {
           </label>
           <select
             value={groupId ?? ''}
-            onChange={e => navigate(`/settings?groupId=${e.target.value}`)}
+            onChange={e => navigate(`/settings/groups/${e.target.value}`)}
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
           >
             {groups.map(g => (

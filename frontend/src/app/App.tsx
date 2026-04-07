@@ -13,7 +13,9 @@ export function App() {
           <Route path="/" element={<SetupPage />} />
           <Route path="/setup" element={<SetupPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/dashboard/groups/:groupId" element={<DashboardPage />} />
           <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/settings/groups/:groupId" element={<SettingsPage />} />
         </Routes>
       </div>
     </BrowserRouter>

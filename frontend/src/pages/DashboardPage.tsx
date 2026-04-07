@@ -1,5 +1,5 @@
-import { useState, useCallback, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useCallback, useMemo, useEffect } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useI18n } from '../i18n/context'
 import { useGroups, useGroupMetrics, useGroupTrends } from '../api/hooks'
 import { MetricsCard } from '../components/MetricsCard'
@@ -13,12 +13,19 @@ type TrendPreset = '3months' | '6months' | '1year'
 export function DashboardPage() {
   const { t } = useI18n()
   const navigate = useNavigate()
+  const { groupId: groupIdParam } = useParams<{ groupId: string }>()
   const { data: groups } = useGroups()
-  const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null)
   const [jobId, setJobId] = useState<number | null>(null)
   const [trendPreset, setTrendPreset] = useState<TrendPreset>('6months')
 
-  const groupId = selectedGroupId ?? groups?.[0]?.id ?? null
+  const groupId = groupIdParam ? Number(groupIdParam) : null
+
+  // Redirect to first group when no groupId in URL
+  useEffect(() => {
+    if (!groupIdParam && groups && groups.length > 0) {
+      navigate(`/dashboard/groups/${groups[0].id}`, { replace: true })
+    }
+  }, [groupIdParam, groups, navigate])
 
   const { data: metrics, refetch: refetchMetrics } = useGroupMetrics(groupId)
 
@@ -74,7 +81,7 @@ export function DashboardPage() {
         <div className="flex items-center gap-3">
           <select
             value={groupId ?? ''}
-            onChange={e => setSelectedGroupId(Number(e.target.value))}
+            onChange={e => navigate(`/dashboard/groups/${e.target.value}`)}
             className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
           >
             {groups.map(g => (
@@ -91,7 +98,7 @@ export function DashboardPage() {
         </div>
         <div className="flex items-center gap-3">
           <button
-            onClick={() => navigate(`/settings${groupId ? `?groupId=${groupId}` : ''}`)}
+            onClick={() => navigate(`/settings/groups/${groupId}`)}
             className="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
           >
             {t('settings.title')}
