@@ -106,8 +106,8 @@ fetch:
 ### グループ単位の設定（設定ページ）
 
 - **集計単位** - 週次または月次
-- **リードタイム開始点** - `first_commit_at` / `issue.created_at` / `pr_created_at`
-- **MTTR開始点** - 同じ選択肢、リードタイムとは独立して設定可能
+- **変更リードタイム開始点** - 最初のコミット（推奨）/ Issue作成日 / PR作成日
+- **平均復旧時間開始点** - 同じ選択肢、変更リードタイムとは独立して設定可能。障害時のIssue自動起票と組み合わせると精度向上
 - **インシデント検出ルール** - タイトルキーワード、ブランチキーワード、ラベル一致
 
 ## API
@@ -178,7 +178,6 @@ cd e2e && npm install && npx playwright install chromium && npx playwright test
 
 - [DESIGN.md](DESIGN.md) - アーキテクチャ、DBスキーマ、API設計、メトリクス定義
 - [TODOS.md](TODOS.md) - 延期された機能とPhase 2ロードマップ
-- [CHANGELOG.md](CHANGELOG.md) - バージョン履歴
 
 ## ライセンス
 

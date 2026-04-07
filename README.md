@@ -106,8 +106,8 @@ Priority: environment variable > config.yaml > default.
 ### Per-group settings (via Settings page)
 
 - **Aggregation unit** - Weekly or monthly
-- **Lead time start point** - `first_commit_at`, `issue.created_at`, or `pr_created_at`
-- **MTTR start point** - Same options, configurable independently from lead time
+- **Change Lead Time start point** - First Commit (recommended), Issue Created, or PR Created
+- **MTTR start point** - Same options, configurable independently from lead time. Combining with automated issue creation on incidents improves accuracy
 - **Incident detection rules** - Title keywords, branch keywords, label matches
 
 ## API
@@ -178,7 +178,6 @@ cd e2e && npm install && npx playwright install chromium && npx playwright test
 
 - [DESIGN.md](DESIGN.md) - Architecture, DB schema, API design, metrics definitions
 - [TODOS.md](TODOS.md) - Deferred features and Phase 2 roadmap
-- [CHANGELOG.md](CHANGELOG.md) - Version history
 
 ## License
 
