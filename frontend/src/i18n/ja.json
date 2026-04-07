@@ -97,6 +97,8 @@
   "settings.lead_time_pr_created_desc": "PR作成日時。常に利用可能。",
   "settings.lead_time_issue": "Issue作成日",
   "settings.repos_title": "対象リポジトリ",
+  "settings.fallback_lead_time": "変更リードタイム: {total}件中{count}件がフォールバック開始点を使用",
+  "settings.fallback_mttr": "平均復旧時間: {total}件中{count}件がフォールバック開始点を使用",
   "settings.save": "保存",
   "settings.saved": "保存しました",
   "settings.new_group": "新規グループ作成",

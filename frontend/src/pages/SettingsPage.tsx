@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useI18n } from '../i18n/context'
-import { useGroupSettings, useUpdateGroupSettings, useGroups, useDeleteGroup } from '../api/hooks'
+import { useGroupSettings, useUpdateGroupSettings, useGroups, useDeleteGroup, type RepoFallbackStats } from '../api/hooks'
 
 export function SettingsPage() {
   const { t } = useI18n()
@@ -247,18 +247,38 @@ export function SettingsPage() {
         )}
       </div>
 
-      {/* Repositories (display only) */}
+      {/* Repositories with fallback markers */}
       {settings?.repos && settings.repos.length > 0 && (
         <div>
           <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             {t('settings.repos_title')}
           </h3>
           <div className="border border-gray-200 dark:border-gray-700 rounded divide-y divide-gray-200 dark:divide-gray-700">
-            {settings.repos.map(repo => (
-              <div key={repo.id} className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300">
-                {repo.full_name}
-              </div>
-            ))}
+            {settings.repos.map(repo => {
+              const stats = settings.fallback_stats?.find((s: RepoFallbackStats) => s.repo_id === repo.id)
+              const hasLeadTimeFallback = stats && stats.lead_time_fallbacks > 0
+              const hasMttrFallback = stats && stats.mttr_fallbacks > 0
+              const tooltipParts: string[] = []
+              if (hasLeadTimeFallback) {
+                tooltipParts.push(t('settings.fallback_lead_time', { count: stats.lead_time_fallbacks, total: stats.total_prs }))
+              }
+              if (hasMttrFallback) {
+                tooltipParts.push(t('settings.fallback_mttr', { count: stats.mttr_fallbacks, total: stats.total_prs }))
+              }
+              return (
+                <div key={repo.id} className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                  <span>{repo.full_name}</span>
+                  {(hasLeadTimeFallback || hasMttrFallback) && (
+                    <span
+                      title={tooltipParts.join('\n')}
+                      className="text-amber-500 cursor-help"
+                    >
+                      ⚠
+                    </span>
+                  )}
+                </div>
+              )
+            })}
           </div>
         </div>
       )}

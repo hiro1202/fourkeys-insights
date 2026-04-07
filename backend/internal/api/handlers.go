@@ -384,6 +384,14 @@ func (h *Handler) GetGroupTrends(w http.ResponseWriter, r *http.Request) {
 
 // --- Group Settings ---
 
+// repoFallbackStats holds per-repo fallback counts for lead time and MTTR.
+type repoFallbackStats struct {
+	RepoID            int64 `json:"repo_id"`
+	TotalPRs          int   `json:"total_prs"`
+	LeadTimeFallbacks int   `json:"lead_time_fallbacks"`
+	MTTRFallbacks     int   `json:"mttr_fallbacks"`
+}
+
 func (h *Handler) GetGroupSettings(w http.ResponseWriter, r *http.Request) {
 	id, err := parseID(r, "id")
 	if err != nil {
@@ -397,6 +405,34 @@ func (h *Handler) GetGroupSettings(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Compute per-repo fallback stats
+	since := time.Now().AddDate(-1, 0, 0)
+	prs, err := h.Store.GetMergedPRsByGroup(r.Context(), id, since)
+	fallbackMap := make(map[int64]*repoFallbackStats)
+	if err == nil {
+		for _, pr := range prs {
+			stats, ok := fallbackMap[pr.RepoID]
+			if !ok {
+				stats = &repoFallbackStats{RepoID: pr.RepoID}
+				fallbackMap[pr.RepoID] = stats
+			}
+			stats.TotalPRs++
+			lt := metrics.CalculateLeadTime(pr, group.LeadTimeStart)
+			if lt.UsedFallback {
+				stats.LeadTimeFallbacks++
+			}
+			mttr := metrics.CalculateLeadTime(pr, group.MTTRStart)
+			if mttr.UsedFallback {
+				stats.MTTRFallbacks++
+			}
+		}
+	}
+
+	fallbackStats := make([]repoFallbackStats, 0, len(fallbackMap))
+	for _, s := range fallbackMap {
+		fallbackStats = append(fallbackStats, *s)
+	}
+
 	writeJSON(w, http.StatusOK, map[string]interface{}{
 		"name":             group.Name,
 		"aggregation_unit": group.AggregationUnit,
@@ -404,6 +440,7 @@ func (h *Handler) GetGroupSettings(w http.ResponseWriter, r *http.Request) {
 		"mttr_start":       group.MTTRStart,
 		"incident_rules":   group.IncidentRules,
 		"repos":            group.Repos,
+		"fallback_stats":   fallbackStats,
 	})
 }
 
