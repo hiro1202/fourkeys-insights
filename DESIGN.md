@@ -193,6 +193,16 @@ Pull Requests:
 
 When fallback occurs, UI displays warning icon next to the affected PR row.
 
+The `GET /groups/:id/settings` endpoint returns a `fallback_stats` array with per-repo fallback counts:
+```json
+{
+  "fallback_stats": [
+    { "repo_id": 7, "total_prs": 4, "lead_time_fallbacks": 4, "mttr_fallbacks": 4 }
+  ]
+}
+```
+Settings page displays a warning icon (⚠) next to repos with fallback usage, with tooltip showing lead time and MTTR fallback counts separately.
+
 ### Deploy Frequency
 - Definition: PR merge count to base branch per period
 - Calculation: `merged_pr_count` (period total). DORA level classification still uses `merged_pr_count / period_days` internally
@@ -307,6 +317,7 @@ Step 3: Group Creation
 
 ```
 +--------------------------------------------------+
+| URL: /dashboard/groups/:id                              |
 | [Group dropdown] [Dark/Light toggle] [EN/JP] [Gear] |
 +--------------------------------------------------+
 | [Lead Time] [Deploy Freq] [CFR]    [MTTR]        |
@@ -324,12 +335,12 @@ Step 3: Group Creation
 +--------------------------------------------------+
 ```
 
-### Settings (full page at /settings)
+### Settings (full page at /settings/groups/:id)
 - Per-group aggregation unit (weekly/monthly)
 - Per-group lead time start point selector
 - Per-group MTTR start point selector (independent from lead time)
 - Per-group incident detection rules (title keywords, branch keywords, labels)
-- Repository list (display only)
+- Repository list with per-repo fallback markers (warning icon when PRs use fallback start points, separate indicators for lead time and MTTR)
 - Group deletion
 
 ### Sync States
