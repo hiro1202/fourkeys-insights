@@ -58,7 +58,7 @@ export function SetupPage() {
       repo_ids: Array.from(selectedIds),
     })
     await startSync.mutateAsync(group.id)
-    navigate('/dashboard')
+    navigate(`/dashboard/groups/${group.id}`)
   }
 
   return (

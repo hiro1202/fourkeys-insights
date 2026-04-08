@@ -1,15 +1,27 @@
 import { useState, useEffect } from 'react'
-import { useSearchParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { useI18n } from '../i18n/context'
-import { useGroupSettings, useUpdateGroupSettings, useGroups, useDeleteGroup } from '../api/hooks'
+import { useGroupSettings, useUpdateGroupSettings, useGroups, useDeleteGroup, type RepoFallbackStats } from '../api/hooks'
 
 export function SettingsPage() {
   const { t } = useI18n()
   const navigate = useNavigate()
-  const [searchParams] = useSearchParams()
-  const groupIdParam = searchParams.get('groupId')
+  const { groupId: groupIdParam } = useParams<{ groupId: string }>()
   const { data: groups } = useGroups()
   const groupId = groupIdParam ? Number(groupIdParam) : groups?.[0]?.id ?? null
+
+  // Redirect to URL with groupId when accessed without one or groupId doesn't exist
+  useEffect(() => {
+    if (!groups || groups.length === 0) return
+    if (!groupIdParam) {
+      navigate(`/settings/groups/${groups[0].id}`, { replace: true })
+      return
+    }
+    const exists = groups.some(g => g.id === Number(groupIdParam))
+    if (!exists) {
+      navigate(`/settings/groups/${groups[0].id}`, { replace: true })
+    }
+  }, [groupIdParam, groups, navigate])
   const { data: settings } = useGroupSettings(groupId)
   const updateSettings = useUpdateGroupSettings()
   const deleteGroup = useDeleteGroup()
@@ -63,7 +75,7 @@ export function SettingsPage() {
     if (!groupId) return
     if (!window.confirm(t('settings.delete_group_confirm'))) return
     await deleteGroup.mutateAsync(groupId)
-    navigate('/dashboard')
+    navigate('/dashboard', { replace: true })
   }
 
   const leadTimeStartOptions = [
@@ -83,7 +95,7 @@ export function SettingsPage() {
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold">{t('settings.title')}</h2>
         <button
-          onClick={() => navigate('/dashboard')}
+          onClick={() => navigate(groupId ? `/dashboard/groups/${groupId}` : '/dashboard')}
           className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
         >
           {t('dashboard.title')} →
@@ -98,7 +110,7 @@ export function SettingsPage() {
           </label>
           <select
             value={groupId ?? ''}
-            onChange={e => navigate(`/settings?groupId=${e.target.value}`)}
+            onChange={e => navigate(`/settings/groups/${e.target.value}`)}
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
           >
             {groups.map(g => (
@@ -235,18 +247,40 @@ export function SettingsPage() {
         )}
       </div>
 
-      {/* Repositories (display only) */}
+      {/* Repositories with fallback markers */}
       {settings?.repos && settings.repos.length > 0 && (
         <div>
           <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             {t('settings.repos_title')}
           </h3>
           <div className="border border-gray-200 dark:border-gray-700 rounded divide-y divide-gray-200 dark:divide-gray-700">
-            {settings.repos.map(repo => (
-              <div key={repo.id} className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300">
-                {repo.full_name}
-              </div>
-            ))}
+            {settings.repos.map(repo => {
+              const stats = settings.fallback_stats?.find((s: RepoFallbackStats) => s.repo_id === repo.id)
+              const hasLeadTimeFallback = stats && stats.lead_time_fallbacks > 0
+              const hasMttrFallback = stats && stats.mttr_fallbacks > 0
+              const tooltipParts: string[] = []
+              if (hasLeadTimeFallback) {
+                tooltipParts.push(t('settings.fallback_lead_time', { count: stats.lead_time_fallbacks, total: stats.total_prs }))
+              }
+              if (hasMttrFallback) {
+                tooltipParts.push(t('settings.fallback_mttr', { count: stats.mttr_fallbacks, total: stats.total_prs }))
+              }
+              return (
+                <div key={repo.id} className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                  <span>{repo.full_name}</span>
+                  {(hasLeadTimeFallback || hasMttrFallback) && (
+                    <span className="relative group">
+                      <svg className="w-4 h-4 text-amber-500 cursor-help" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 5zm0 9a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                      </svg>
+                      <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block w-max max-w-xs px-2 py-1 text-xs text-white bg-gray-800 dark:bg-gray-700 rounded shadow-lg whitespace-pre-line z-10">
+                        {tooltipParts.join('\n')}
+                      </span>
+                    </span>
+                  )}
+                </div>
+              )
+            })}
           </div>
         </div>
       )}

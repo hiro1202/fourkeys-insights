@@ -209,6 +209,13 @@ export interface TrendsResult {
   until: string
 }
 
+export interface RepoFallbackStats {
+  repo_id: number
+  total_prs: number
+  lead_time_fallbacks: number
+  mttr_fallbacks: number
+}
+
 export interface GroupSettings {
   name: string
   aggregation_unit: string
@@ -216,6 +223,7 @@ export interface GroupSettings {
   mttr_start: string
   incident_rules: string
   repos: Repo[]
+  fallback_stats?: RepoFallbackStats[]
 }
 
 export interface PullRequest {
