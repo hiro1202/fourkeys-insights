@@ -24,6 +24,8 @@ Each metric gets a DORA level: Elite, High, Medium, or Low.
 - Docker and Docker Compose
 - GitHub Personal Access Token (fine-grained)
   - Required permissions: **Pull requests (read)**, **Contents (read)**
+  - To include Organization repos: set the token's **Resource owner** to your Organization (not your personal account). You may need an org admin to approve the token request
+  - Optional: **Organization Members (read)** permission enables future team-based filtering
 
 ### 1. Clone and configure
 
@@ -50,7 +52,7 @@ Open http://localhost:8080 in your browser.
 ### 3. Setup wizard
 
 1. **Validate token** - Click "Validate" to verify your PAT
-2. **Select repositories** - Search and check the repos you want to track
+2. **Select repositories** - Search and check the repos you want to track. Only repos accessible with your PAT are listed. To see Organization repos, ensure the token's Resource owner is set to the Organization
 3. **Create group** - Name your group and start syncing
 
 The dashboard appears after sync completes.
