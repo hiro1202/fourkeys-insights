@@ -113,7 +113,7 @@
   "level.high": "High",
   "level.medium": "Medium",
   "level.low": "Low",
-  "dashboard.dora_link": "DORA Four Keys とは？",
+  "dashboard.dora_link": "Four Keys とは？",
   "dashboard.dora_link_url": "https://cloud.google.com/blog/ja/products/gcp/using-the-four-keys-to-measure-your-devops-performance",
   "error.pat_invalid": "無効なトークンまたは権限不足です",
   "error.network": "ネットワークエラーです。再試行してください。",

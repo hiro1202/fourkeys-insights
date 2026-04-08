@@ -113,7 +113,7 @@
   "level.high": "High",
   "level.medium": "Medium",
   "level.low": "Low",
-  "dashboard.dora_link": "What is DORA Four Keys?",
+  "dashboard.dora_link": "What is Four Keys?",
   "dashboard.dora_link_url": "https://cloud.google.com/blog/products/devops-sre/using-the-four-keys-to-measure-your-devops-performance",
   "error.pat_invalid": "Invalid token or insufficient permissions",
   "error.network": "Network error. Please try again.",
