@@ -69,7 +69,7 @@ docker compose up
 - **Issue紐づけMTTR** - PRボディの `Closes #N` をパースし、Issue作成日をMTTR開始点として使用
 - **ETag条件付きリクエスト** - 再同期時に変更のないPR一覧の再取得をスキップ
 - **CSVエクスポート** - メトリクスサマリーとPR詳細のZIP（Excel互換UTF-8 BOM付き）
-- **DORAリファレンスリンク** - ダッシュボードからGoogle Cloud公式のDORA Four Keys解説記事へリンク（言語ごとにローカライズ）
+- **DORAリファレンスリンク** - ヘッダーからGoogle Cloud公式のDORA Four Keys解説記事へリンク（言語ごとにローカライズ）
 - **DORAバッジ** - `/api/v1/groups/:id/badge` でSVGバッジを取得
 - **PRサイズ分布** - ヒストグラムチャート（XS/S/M/Lバケット）
 - **ダークモード** - トグルまたはOS設定に追従
