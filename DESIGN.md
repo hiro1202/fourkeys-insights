@@ -180,7 +180,7 @@ Pull Requests:
 - Definition: Time from selected start point to PR merge
 - Calculation: `merged_at - start_point` (median across group)
 - Start point options (per-group setting, configurable separately for lead time and MTTR):
-  - `first_commit_at` (default): First commit timestamp in the PR
+  - `first_commit_at` (default, shown as "recommended" for change lead time): First commit timestamp in the PR
   - `issue.created_at`: Linked issue's creation time (if issue linked)
   - `pr_created_at`: PR creation timestamp
 
@@ -218,6 +218,7 @@ Settings page displays a warning icon (⚠) next to repos with fallback usage, w
 - Calculation: `median(merged_at - start_point)` for incident PRs
 - MTTR start point is configurable independently from change lead time start point
 - Issue-linked MTTR: When a PR body contains `Closes #N` etc., use `issue.created_at` as start point
+- Combining with automated issue creation on incidents makes `issue.created_at` a close approximation of detection time, improving MTTR accuracy
 
 ### DORA Level Thresholds
 
