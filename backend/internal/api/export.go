@@ -45,7 +45,7 @@ func buildExportZIP(group *db.Group, prs []*db.PullRequest, result metrics.FourK
 	fmt.Fprintf(summary, "# Aggregation: %s\n", group.AggregationUnit)
 	fmt.Fprintf(summary, "# Lead Time Start: %s\n", leadTimeStart)
 	fmt.Fprintf(summary, "# Incident Rules: %s\n", rulesSnapshot)
-	fmt.Fprintf(summary, "Period,Lead Time (hours),Deploy Frequency (/day),Change Failure Rate (%%),MTTR (hours),DORA Level\n")
+	fmt.Fprintf(summary, "Period,Lead Time (hours),Deployment Frequency (/day),Change Failure Rate (%%),MTTR (hours),DORA Level\n")
 	fmt.Fprintf(summary, "%s - %s,%.1f,%.2f,%.1f,%s,%s\n",
 		period.Start.Format("2006-01-02"), period.End.Format("2006-01-02"),
 		result.LeadTimeHours, result.DeployFrequency, result.ChangeFailureRate,

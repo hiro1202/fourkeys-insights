@@ -132,6 +132,18 @@ export function DashboardPage() {
       {/* Status bar */}
       {metrics && <StatusBar metrics={metrics} />}
 
+      {/* DORA reference link */}
+      <div className="text-right">
+        <a
+          href={t('dashboard.dora_link_url')}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-xs text-gray-400 dark:text-gray-500 hover:text-blue-500 dark:hover:text-blue-400"
+        >
+          {t('dashboard.dora_link')} ↗
+        </a>
+      </div>
+
       {/* Metrics cards */}
       {metrics && (
         <>

@@ -203,7 +203,7 @@ The `GET /groups/:id/settings` endpoint returns a `fallback_stats` array with pe
 ```
 Settings page displays a warning icon (⚠) next to repos with fallback usage, with tooltip showing lead time and MTTR fallback counts separately.
 
-### Deploy Frequency
+### Deployment Frequency
 - Definition: PR merge count to base branch per period
 - Calculation: `merged_pr_count` (period total). DORA level classification still uses `merged_pr_count / period_days` internally
 - Note: Assumes PR merge = deploy. UI displays notice: "Treats PR merge as deployment"
@@ -213,7 +213,7 @@ Settings page displays a warning icon (⚠) next to repos with fallback usage, w
 - Calculation: `incident_pr_count / total_pr_count * 100`
 - Incident detection: evaluated at query time (not persisted)
 
-### Mean Time to Restore (MTTR)
+### Time to Restore Service (MTTR)
 - Definition: Median lead time of incident PRs
 - Calculation: `median(merged_at - start_point)` for incident PRs
 - MTTR start point is configurable independently from change lead time start point
@@ -223,7 +223,7 @@ Settings page displays a warning icon (⚠) next to repos with fallback usage, w
 
 | Metric | Elite | High | Medium | Low |
 |--------|-------|------|--------|-----|
-| Deploy Frequency | Multiple/day | Weekly-daily | Monthly-weekly | <Monthly |
+| Deployment Frequency | Multiple/day | Weekly-daily | Monthly-weekly | <Monthly |
 | Lead Time | <1 day | 1 day-1 week | 1 week-1 month | >1 month |
 | Change Failure Rate | 0-5% | 5-10% | 10-15% | >15% |
 | MTTR | <1 hour | <1 day | <1 week | >1 week |
@@ -428,7 +428,7 @@ Dashboard chart (5th, below trend charts).
    # Period: 30 days
    # Lead Time Start: first_commit_at
    # Incident Rules: title_keywords=revert,hotfix; branch_keywords=hotfix; labels=incident,bug
-   Period,Lead Time (hours),Deploy Frequency (/day),Change Failure Rate (%),MTTR (hours),DORA Level
+   Period,Lead Time (hours),Deployment Frequency (/day),Change Failure Rate (%),MTTR (hours),DORA Level
    2026-03-05 - 2026-04-04,24.5,2.3,8.5,4.2,High
    ```
 

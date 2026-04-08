@@ -11,11 +11,11 @@ import (
 type FourKeysResult struct {
 	// Lead Time for Changes (median, in hours)
 	LeadTimeHours float64 `json:"lead_time_hours"`
-	// Deploy Frequency (merges per day)
+	// Deployment Frequency (merges per day)
 	DeployFrequency float64 `json:"deploy_frequency"`
 	// Change Failure Rate (percentage)
 	ChangeFailureRate float64 `json:"change_failure_rate"`
-	// Mean Time to Restore (median of incident PR lead times, in hours)
+	// Time to Restore Service (median of incident PR lead times, in hours)
 	MTTRHours *float64 `json:"mttr_hours"` // nil when no incidents
 	// DORA level for each metric
 	LeadTimeLevel          string  `json:"lead_time_level"`
@@ -93,7 +93,7 @@ func Calculate(input CalculateInput) FourKeysResult {
 	result.LeadTimeHours = medianLT.Hours()
 	result.LeadTimeLevel = classifyLeadTime(medianLT)
 
-	// Deploy Frequency (total deploys in the period)
+	// Deployment Frequency (total deploys in the period)
 	result.DeployFrequency = float64(len(input.PRs))
 	if input.PeriodDays > 0 {
 		perDay := float64(len(input.PRs)) / float64(input.PeriodDays)

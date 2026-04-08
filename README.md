@@ -11,9 +11,9 @@ Fetches merged pull requests from your GitHub repos, calculates the four DORA me
 | Metric | How it's calculated |
 |--------|-------------------|
 | **Lead Time for Changes** | Median time from first commit (or issue/PR creation) to PR merge |
-| **Deploy Frequency** | PR merge count per period (treats merge as deploy) |
+| **Deployment Frequency** | PR merge count per period (treats merge as deploy) |
 | **Change Failure Rate** | % of PRs matching incident rules (title/branch/label keywords) |
-| **Mean Time to Restore** | Median lead time of incident PRs |
+| **Time to Restore Service** | Median lead time of incident PRs |
 
 Each metric gets a DORA level: Elite, High, Medium, or Low.
 
