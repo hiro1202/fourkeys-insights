@@ -333,7 +333,11 @@ Step 3: Group Creation
 +--------------------------------------------------+
 | [CSV Export] [Re-sync] | Status bar               |
 +--------------------------------------------------+
+| "What is DORA Four Keys?" link (right-aligned)   |
++--------------------------------------------------+
 ```
+
+DORA reference link between status bar and metrics cards links to Google Cloud's official DORA Four Keys article. URL is localized per i18n language (EN → English blog, JA → Japanese blog).
 
 ### Settings (full page at /settings/groups/:id)
 - Per-group aggregation unit (weekly/monthly)

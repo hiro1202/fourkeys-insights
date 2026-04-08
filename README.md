@@ -67,6 +67,7 @@ The dashboard appears after sync completes.
 - **Issue-linked MTTR** - Parses `Closes #N` from PR body to use issue creation as MTTR start
 - **ETag conditional requests** - Skips re-fetching unchanged PR lists on re-sync
 - **CSV export** - ZIP with metrics summary and PR details (UTF-8 BOM for Excel)
+- **DORA reference link** - Dashboard links to official Google Cloud DORA Four Keys article (localized per language)
 - **DORA badge** - SVG badge at `/api/v1/groups/:id/badge`
 - **PR size distribution** - Histogram chart (XS/S/M/L buckets)
 - **Dark mode** - Toggle or follow OS preference
