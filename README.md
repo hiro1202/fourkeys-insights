@@ -111,7 +111,7 @@ Priority: environment variable > config.yaml > default.
 ### Per-group settings (via Settings page)
 
 - **Aggregation unit** - Weekly or monthly
-- **Change Lead Time start point** - First Commit (recommended), Issue Created, or PR Created
+- **Change Lead Time start point** - First Commit, Issue Created, or PR Created
 - **MTTR start point** - Same options, configurable independently from lead time. Combining with automated issue creation on incidents improves accuracy
 - **Incident detection rules** - Title keywords, branch keywords, label matches
 

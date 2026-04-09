@@ -89,7 +89,6 @@
   "settings.mttr_start": "サービス復元時間開始点",
   "settings.mttr_start_desc": "サービス復元時間の計測開始点を設定します。障害発生時にIssueが自動起票される運用と組み合わせると、Issue作成日がインシデント検知時刻の近似値となりサービス復元時間の精度が向上します。",
   "settings.lead_time_first_commit": "最初のコミット",
-  "settings.lead_time_first_commit_recommended": "最初のコミット（推奨）",
   "settings.lead_time_first_commit_desc": "ブランチの最初のコミット日時。取得できない場合はPR作成日にフォールバック。",
   "settings.lead_time_issue_created": "Issue作成日",
   "settings.lead_time_issue_created_desc": "紐づくIssueの作成日時。Issue未紐づけの場合は最初のコミット→PR作成日の順にフォールバック。",

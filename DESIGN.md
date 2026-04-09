@@ -180,7 +180,7 @@ Pull Requests:
 - Definition: Time from selected start point to PR merge
 - Calculation: `merged_at - start_point` (median across group)
 - Start point options (per-group setting, configurable separately for lead time and MTTR):
-  - `first_commit_at` (default, shown as "recommended" for change lead time): First commit timestamp in the PR
+  - `first_commit_at` (default): First commit timestamp in the PR
   - `issue.created_at`: Linked issue's creation time (if issue linked)
   - `pr_created_at`: PR creation timestamp
 

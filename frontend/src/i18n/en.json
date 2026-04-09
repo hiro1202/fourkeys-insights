@@ -89,7 +89,6 @@
   "settings.mttr_start": "MTTR Start Point",
   "settings.mttr_start_desc": "The starting point for measuring MTTR. Combining with automated issue creation on incidents makes Issue Created a close approximation of detection time, improving Time to Restore Service accuracy.",
   "settings.lead_time_first_commit": "First Commit",
-  "settings.lead_time_first_commit_recommended": "First Commit (recommended)",
   "settings.lead_time_first_commit_desc": "Branch's first commit time. Falls back to PR created if unavailable.",
   "settings.lead_time_issue_created": "Issue Created",
   "settings.lead_time_issue_created_desc": "Linked issue creation time. Falls back to first commit, then PR created.",
