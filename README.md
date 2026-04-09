@@ -11,9 +11,9 @@ Fetches merged pull requests from your GitHub repos, calculates the four DORA me
 | Metric | How it's calculated |
 |--------|-------------------|
 | **Lead Time for Changes** | Median time from first commit (or issue/PR creation) to PR merge |
-| **Deploy Frequency** | PR merge count per period (treats merge as deploy) |
+| **Deployment Frequency** | PR merge count per period (treats merge as deploy) |
 | **Change Failure Rate** | % of PRs matching incident rules (title/branch/label keywords) |
-| **Mean Time to Restore** | Median lead time of incident PRs |
+| **Time to Restore Service** | Median lead time of incident PRs |
 
 Each metric gets a DORA level: Elite, High, Medium, or Low.
 
@@ -24,6 +24,8 @@ Each metric gets a DORA level: Elite, High, Medium, or Low.
 - Docker and Docker Compose
 - GitHub Personal Access Token (fine-grained)
   - Required permissions: **Pull requests (read)**, **Contents (read)**
+  - To include Organization repos: set the token's **Resource owner** to your Organization (not your personal account). You may need an org admin to approve the token request
+  - Optional: **Organization Members (read)** permission enables future team-based filtering
 
 ### 1. Clone and configure
 
@@ -50,7 +52,7 @@ Open http://localhost:8080 in your browser.
 ### 3. Setup wizard
 
 1. **Validate token** - Click "Validate" to verify your PAT
-2. **Select repositories** - Search and check the repos you want to track
+2. **Select repositories** - Search and check the repos you want to track. Only repos accessible with your PAT are listed. To see Organization repos, ensure the token's Resource owner is set to the Organization
 3. **Create group** - Name your group and start syncing
 
 The dashboard appears after sync completes.
@@ -67,6 +69,7 @@ The dashboard appears after sync completes.
 - **Issue-linked MTTR** - Parses `Closes #N` from PR body to use issue creation as MTTR start
 - **ETag conditional requests** - Skips re-fetching unchanged PR lists on re-sync
 - **CSV export** - ZIP with metrics summary and PR details (UTF-8 BOM for Excel)
+- **DORA reference link** - Header links to official Google Cloud DORA Four Keys article (localized per language)
 - **DORA badge** - SVG badge at `/api/v1/groups/:id/badge`
 - **PR size distribution** - Histogram chart (XS/S/M/L buckets)
 - **Dark mode** - Toggle or follow OS preference
@@ -108,7 +111,7 @@ Priority: environment variable > config.yaml > default.
 ### Per-group settings (via Settings page)
 
 - **Aggregation unit** - Weekly or monthly
-- **Change Lead Time start point** - First Commit (recommended), Issue Created, or PR Created
+- **Change Lead Time start point** - First Commit, Issue Created, or PR Created
 - **MTTR start point** - Same options, configurable independently from lead time. Combining with automated issue creation on incidents improves accuracy
 - **Incident detection rules** - Title keywords, branch keywords, label matches
 

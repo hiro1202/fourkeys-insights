@@ -79,7 +79,7 @@ export function SettingsPage() {
   }
 
   const leadTimeStartOptions = [
-    { value: 'first_commit_at', label: t('settings.lead_time_first_commit_recommended'), desc: t('settings.lead_time_first_commit_desc') },
+    { value: 'first_commit_at', label: t('settings.lead_time_first_commit'), desc: t('settings.lead_time_first_commit_desc') },
     { value: 'issue.created_at', label: t('settings.lead_time_issue_created'), desc: t('settings.lead_time_issue_created_desc') },
     { value: 'pr_created_at', label: t('settings.lead_time_pr_created'), desc: t('settings.lead_time_pr_created_desc') },
   ]

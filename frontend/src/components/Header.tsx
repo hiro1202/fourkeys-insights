@@ -16,7 +16,17 @@ export function Header() {
 
   return (
     <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-3 flex items-center justify-between">
-      <h1 className="text-lg font-bold">{t('app.title')}</h1>
+      <div className="flex items-center gap-2">
+        <h1 className="text-lg font-bold">{t('app.title')}</h1>
+        <a
+          href={t('dashboard.dora_link_url')}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-xs text-gray-400 dark:text-gray-500 hover:text-blue-500 dark:hover:text-blue-400"
+        >
+          {t('dashboard.dora_link')} ↗
+        </a>
+      </div>
       <div className="flex items-center gap-3">
         <button
           onClick={() => setDark(!dark)}

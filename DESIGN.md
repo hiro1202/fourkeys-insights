@@ -180,7 +180,7 @@ Pull Requests:
 - Definition: Time from selected start point to PR merge
 - Calculation: `merged_at - start_point` (median across group)
 - Start point options (per-group setting, configurable separately for lead time and MTTR):
-  - `first_commit_at` (default, shown as "recommended" for change lead time): First commit timestamp in the PR
+  - `first_commit_at` (default): First commit timestamp in the PR
   - `issue.created_at`: Linked issue's creation time (if issue linked)
   - `pr_created_at`: PR creation timestamp
 
@@ -203,7 +203,7 @@ The `GET /groups/:id/settings` endpoint returns a `fallback_stats` array with pe
 ```
 Settings page displays a warning icon (⚠) next to repos with fallback usage, with tooltip showing lead time and MTTR fallback counts separately.
 
-### Deploy Frequency
+### Deployment Frequency
 - Definition: PR merge count to base branch per period
 - Calculation: `merged_pr_count` (period total). DORA level classification still uses `merged_pr_count / period_days` internally
 - Note: Assumes PR merge = deploy. UI displays notice: "Treats PR merge as deployment"
@@ -213,7 +213,7 @@ Settings page displays a warning icon (⚠) next to repos with fallback usage, w
 - Calculation: `incident_pr_count / total_pr_count * 100`
 - Incident detection: evaluated at query time (not persisted)
 
-### Mean Time to Restore (MTTR)
+### Time to Restore Service (MTTR)
 - Definition: Median lead time of incident PRs
 - Calculation: `median(merged_at - start_point)` for incident PRs
 - MTTR start point is configurable independently from change lead time start point
@@ -224,7 +224,7 @@ Settings page displays a warning icon (⚠) next to repos with fallback usage, w
 
 | Metric | Elite | High | Medium | Low |
 |--------|-------|------|--------|-----|
-| Deploy Frequency | Multiple/day | Weekly-daily | Monthly-weekly | <Monthly |
+| Deployment Frequency | Multiple/day | Weekly-daily | Monthly-weekly | <Monthly |
 | Lead Time | <1 day | 1 day-1 week | 1 week-1 month | >1 month |
 | Change Failure Rate | 0-5% | 5-10% | 10-15% | >15% |
 | MTTR | <1 hour | <1 day | <1 week | >1 week |
@@ -336,6 +336,8 @@ Step 3: Group Creation
 +--------------------------------------------------+
 ```
 
+Header includes "What is Four Keys?" link next to the app title, linking to Google Cloud's official DORA Four Keys article. URL is localized per i18n language (EN → English blog, JA → Japanese blog).
+
 ### Settings (full page at /settings/groups/:id)
 - Per-group aggregation unit (weekly/monthly)
 - Per-group lead time start point selector
@@ -429,7 +431,7 @@ Dashboard chart (5th, below trend charts).
    # Period: 30 days
    # Lead Time Start: first_commit_at
    # Incident Rules: title_keywords=revert,hotfix; branch_keywords=hotfix; labels=incident,bug
-   Period,Lead Time (hours),Deploy Frequency (/day),Change Failure Rate (%),MTTR (hours),DORA Level
+   Period,Lead Time (hours),Deployment Frequency (/day),Change Failure Rate (%),MTTR (hours),DORA Level
    2026-03-05 - 2026-04-04,24.5,2.3,8.5,4.2,High
    ```
 
