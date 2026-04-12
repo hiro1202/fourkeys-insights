@@ -206,7 +206,7 @@ Settings page displays a warning icon (⚠) next to repos with fallback usage, w
 ### Deployment Frequency
 - Definition: PR merge count to base branch per period
 - Calculation: `merged_pr_count` (period total). DORA level classification still uses `merged_pr_count / period_days` internally
-- Note: Assumes PR merge = deploy. UI displays notice: "Treats PR merge as deployment"
+- Note: Assumes PR merge = deploy
 
 ### Change Failure Rate
 - Definition: Percentage of incident PRs
@@ -327,8 +327,6 @@ Step 3: Group Creation
 | [Lead Time trend] | [Deploy Freq trend]           |
 | [CFR trend]       | [MTTR trend]                  |
 +--------------------------------------------------+
-| [PR Size Distribution histogram]                  |
-+--------------------------------------------------+
 | [PR Table: paginated, sortable]                   |
 | #  Title  Branch  Merged  Lead Time  Incident     |
 +--------------------------------------------------+
@@ -410,14 +408,6 @@ Colors: Elite=green(#22c55e), High=blue(#3b82f6), Medium=yellow(#eab308), Low=re
 Format: shield.io style badge. "DORA | Elite" with colored background.
 
 Cache-Control: `no-cache` (always fresh from DB query).
-
-## PR Size Distribution
-
-Dashboard chart (5th, below trend charts).
-- Type: ECharts bar chart
-- X-axis buckets: XS (0-50 lines), S (51-200), M (201-500), L (501+)
-- Y-axis: PR count
-- Lines = additions + deletions
 
 ## CSV Export
 
