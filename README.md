@@ -71,7 +71,6 @@ The dashboard appears after sync completes.
 - **CSV export** - ZIP with metrics summary and PR details (UTF-8 BOM for Excel)
 - **DORA reference link** - Header links to official Google Cloud DORA Four Keys article (localized per language)
 - **DORA badge** - SVG badge at `/api/v1/groups/:id/badge`
-- **PR size distribution** - Histogram chart (XS/S/M/L buckets)
 - **Dark mode** - Toggle or follow OS preference
 - **i18n** - English and Japanese
 
