@@ -71,7 +71,6 @@ docker compose up
 - **CSVエクスポート** - メトリクスサマリーとPR詳細のZIP（Excel互換UTF-8 BOM付き）
 - **DORAリファレンスリンク** - ヘッダーからGoogle Cloud公式のDORA Four Keys解説記事へリンク（言語ごとにローカライズ）
 - **DORAバッジ** - `/api/v1/groups/:id/badge` でSVGバッジを取得
-- **PRサイズ分布** - ヒストグラムチャート（XS/S/M/Lバケット）
 - **ダークモード** - トグルまたはOS設定に追従
 - **多言語対応** - 英語・日本語
 
