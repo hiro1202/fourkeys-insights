@@ -60,17 +60,14 @@ The dashboard appears after sync completes.
 ## Features
 
 - **Multi-repo grouping** - Track metrics across multiple repositories as a single team
-- **URL-based group persistence** - Selected group is stored in the URL path, so bookmarks and page reloads keep your context
 - **Aggregation unit** - Weekly (Mon-Sun) or monthly period for metrics cards and trend charts
 - **Selectable lead time start point** - First commit, linked issue creation, or PR creation (configurable separately for lead time and MTTR)
 - **Trend charts** - Lead time, deploy frequency, CFR, and MTTR trends over 3/6/12 months
 - **Per-repo fallback markers** - Settings page shows which repos have PRs using fallback start points, with separate indicators for lead time and MTTR
 - **Incident detection at query time** - Configurable rules (title/branch keywords, labels). Change rules without re-syncing
 - **Issue-linked MTTR** - Parses `Closes #N` from PR body to use issue creation as MTTR start
-- **ETag conditional requests** - Skips re-fetching unchanged PR lists on re-sync
 - **CSV export** - ZIP with metrics summary and PR details (UTF-8 BOM for Excel)
-- **DORA reference link** - Header links to official Google Cloud DORA Four Keys article (localized per language)
-- **DORA badge** - SVG badge at `/api/v1/groups/:id/badge`
+- **DORA badge** - SVG badge at `/api/v1/groups/:id/badge` (embeddable in other repos' READMEs)
 - **Dark mode** - Toggle or follow OS preference
 - **i18n** - English and Japanese
 
