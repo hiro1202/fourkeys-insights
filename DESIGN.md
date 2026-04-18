@@ -121,7 +121,7 @@ CREATE TABLE pull_requests (
 
 CREATE TABLE jobs (
   id         INTEGER PRIMARY KEY AUTOINCREMENT,
-  group_id   INTEGER REFERENCES repo_groups(id),
+  group_id   INTEGER REFERENCES repo_groups(id) ON DELETE CASCADE,
   status     TEXT NOT NULL DEFAULT 'idle',  -- idle, fetching, computing, complete, failed, cancelled
   progress   TEXT,          -- JSON: {"fetched":42,"total":120,"current_repo":"owner/name"}
   error      TEXT,
