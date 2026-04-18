@@ -213,8 +213,19 @@ func (s *SQLiteStore) UpdateGroup(ctx context.Context, id int64, name string, ag
 }
 
 func (s *SQLiteStore) DeleteGroup(ctx context.Context, id int64) error {
-	_, err := s.db.ExecContext(ctx, `DELETE FROM repo_groups WHERE id = ?`, id)
-	return err
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return fmt.Errorf("begin tx: %w", err)
+	}
+	defer tx.Rollback()
+
+	if _, err := tx.ExecContext(ctx, `DELETE FROM jobs WHERE group_id = ?`, id); err != nil {
+		return fmt.Errorf("delete jobs: %w", err)
+	}
+	if _, err := tx.ExecContext(ctx, `DELETE FROM repo_groups WHERE id = ?`, id); err != nil {
+		return fmt.Errorf("delete group: %w", err)
+	}
+	return tx.Commit()
 }
 
 // --- Pull Requests ---

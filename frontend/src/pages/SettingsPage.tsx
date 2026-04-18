@@ -74,8 +74,15 @@ export function SettingsPage() {
   const handleDelete = async () => {
     if (!groupId) return
     if (!window.confirm(t('settings.delete_group_confirm'))) return
-    await deleteGroup.mutateAsync(groupId)
+    const idToDelete = groupId
+    // Navigate first so the settings page unmounts before the groups list
+    // refetches; otherwise its useEffect redirects to another group's settings.
     navigate('/dashboard', { replace: true })
+    try {
+      await deleteGroup.mutateAsync(idToDelete)
+    } catch (err) {
+      window.alert(`${t('settings.delete_group_failed')}: ${(err as Error).message}`)
+    }
   }
 
   const leadTimeStartOptions = [
