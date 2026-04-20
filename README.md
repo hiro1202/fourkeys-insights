@@ -185,4 +185,4 @@ cd e2e && npm install && npx playwright install chromium && npx playwright test
 
 ## License
 
-MIT
+MIT Licensed. See [LICENSE](LICENSE) for full details.
