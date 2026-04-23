@@ -103,6 +103,7 @@
   "settings.new_group": "New Group",
   "settings.delete_group": "Delete Group",
   "settings.delete_group_confirm": "Are you sure you want to delete this group? This action cannot be undone.",
+  "settings.delete_group_failed": "Failed to delete group",
   "status.period": "Period",
   "status.total_prs": "Total PRs",
   "status.lead_time_start": "Lead Time start",

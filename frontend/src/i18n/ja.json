@@ -103,6 +103,7 @@
   "settings.new_group": "新規グループ作成",
   "settings.delete_group": "グループを削除",
   "settings.delete_group_confirm": "このグループを削除しますか？この操作は取り消せません。",
+  "settings.delete_group_failed": "グループの削除に失敗しました",
   "status.period": "期間",
   "status.total_prs": "合計PR数",
   "status.lead_time_start": "変更リードタイム開始点",

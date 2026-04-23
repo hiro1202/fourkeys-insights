@@ -166,6 +166,7 @@ func (h *Handler) DeleteGroup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := h.Store.DeleteGroup(r.Context(), id); err != nil {
+		h.Logger.Error("failed to delete group", zap.Int64("group_id", id), zap.Error(err))
 		writeError(w, http.StatusInternalServerError, "Failed to delete group")
 		return
 	}

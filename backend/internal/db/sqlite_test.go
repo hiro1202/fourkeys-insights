@@ -129,6 +129,43 @@ func TestGroupCRUD(t *testing.T) {
 	}
 }
 
+func TestDeleteGroupWithJobs(t *testing.T) {
+	store := setupTestStore(t)
+	ctx := context.Background()
+
+	r1, _ := store.UpsertRepo(ctx, &Repo{Owner: "o", Name: "a", FullName: "o/a", DefaultBranch: "main"})
+	groupID, err := store.CreateGroup(ctx, "team", "weekly", []int64{r1})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Create jobs referencing the group — without cascade this would block delete.
+	if _, err := store.CreateJob(ctx, groupID); err != nil {
+		t.Fatalf("create job 1: %v", err)
+	}
+	if _, err := store.CreateJob(ctx, groupID); err != nil {
+		t.Fatalf("create job 2: %v", err)
+	}
+
+	if err := store.DeleteGroup(ctx, groupID); err != nil {
+		t.Fatalf("DeleteGroup failed with jobs present: %v", err)
+	}
+
+	groups, _ := store.ListGroups(ctx)
+	if len(groups) != 0 {
+		t.Fatalf("expected 0 groups after delete, got %d", len(groups))
+	}
+
+	// Jobs belonging to the group should be gone too.
+	var jobCount int
+	if err := store.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM jobs WHERE group_id = ?`, groupID).Scan(&jobCount); err != nil {
+		t.Fatal(err)
+	}
+	if jobCount != 0 {
+		t.Fatalf("expected 0 jobs for deleted group, got %d", jobCount)
+	}
+}
+
 func TestPullRequestUpsertAndList(t *testing.T) {
 	store := setupTestStore(t)
 	ctx := context.Background()

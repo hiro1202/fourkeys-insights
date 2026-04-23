@@ -53,7 +53,7 @@ var migrations = []string{
 
 	`CREATE TABLE IF NOT EXISTS jobs (
 		id           INTEGER PRIMARY KEY AUTOINCREMENT,
-		group_id     INTEGER REFERENCES repo_groups(id),
+		group_id     INTEGER REFERENCES repo_groups(id) ON DELETE CASCADE,
 		status       TEXT NOT NULL DEFAULT 'idle',
 		progress     TEXT,
 		error        TEXT,
